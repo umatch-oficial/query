@@ -1,0 +1,36 @@
+import entryToString from "./entryToString";
+
+import type { AsArray, OneOrArray, Payload, Primitive, QueryAs } from "./index";
+import type { Dictionary } from "@umatch/utils";
+
+/**
+ * Converts conditions to arrays.
+ *
+ * If they are an object, also transforms the values using [toSQLValue()]{@link import('./toSQLValue').default}.
+ *
+ * @example
+ * string     => [string]
+ * [string]   => [string]
+ * { id: 1 }  => ['id = 1']
+ */
+function toArray<T extends Payload | OneOrArray<Primitive | QueryAs>>(
+  x?: T,
+  entriesCallback?: (entry: [string, Primitive]) => string,
+): T extends null | undefined ? [] : T extends Dictionary ? string[] : AsArray<T>;
+function toArray(
+  x?: Payload | OneOrArray<Primitive | QueryAs>,
+  entriesCallback: (entry: [string, Primitive]) => string = entryToString(),
+) {
+  if (x == null) return [];
+  if (x instanceof Array) return x;
+  switch (typeof x) {
+    case "string":
+    case "boolean":
+    case "number":
+      return [x];
+    default:
+      return Object.entries(x).map(entriesCallback);
+  }
+}
+
+export default toArray;

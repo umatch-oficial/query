@@ -1,0 +1,10 @@
+{
+    "testEnvironment": "node",
+    "moduleDirectories": [
+        "node_modules",
+        "src"
+    ],
+    "transform": {
+        "^.+\\.(t|j)sx?$": ["ts-jest", { "tsconfig": "tsconfig.base.json" }]
+    }
+}

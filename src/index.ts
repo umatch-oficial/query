@@ -53,7 +53,7 @@ const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
   _trx: "trx",
 };
 
-export default class Query<Result = unknown> {
+export class Query<Result = unknown> {
   private _alias: string;
   private _selects: string[];
   private _from: string;

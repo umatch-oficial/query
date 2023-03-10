@@ -23,9 +23,9 @@
         "build": "tsc --build src",
         "test": "jest",
         "lint": "eslint . --ext=.ts",
-        "prepublishOnly": "npm test && npm run lint",
+        "prepublishOnly": "npm run lint && npm run build && npm test",
         "prepare": "npm run build",
-        "preversion": "npm run lint",
+        "preversion": "npm run lint && npm run build && npm test",
         "postversion": "git push && git push --tags"
     },
     "config": {

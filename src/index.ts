@@ -148,6 +148,11 @@ export default class Query<Result = unknown> {
     return this;
   }
 
+  /**
+   * Adds a join clause.
+   *
+   * If 'table' is a Query, it is parsed to a subquery string.
+   */
   private _join(
     joinType: "LEFT" | "INNER" | "OUTER",
     table: string | Query,
@@ -545,6 +550,8 @@ export default class Query<Result = unknown> {
 
   /**
    * Builds and runs the query, returning the result.
+   *
+   * Requires the 'init' method to be called first.
    */
   async run(): Promise<Result[]> {
     if (!Query._run) throw new Error("Cannot run without executing Query.init()");

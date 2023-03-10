@@ -15,14 +15,15 @@ import toSQLValue from "./toSQLValue";
 export default function entryToString(
   transform: boolean = true,
   table: string | null = null,
-): (entry: [string, Primitive]) => string {
+): (entry: [string, unknown]) => string {
   let prefix = "";
   if (table) {
     const alias = table.split(/ (as )?/i)[2];
     prefix = `${alias ?? table}.`;
   }
   return ([key, val]) => {
-    const [operator, value] = getOperator(val);
-    return `${prefix}${key} ${operator} ${transform ? toSQLValue(value) : value}`;
+    const transformed = toSQLValue(val); // this ensures val is a Primitive
+    const [operator, value] = getOperator(val as Primitive);
+    return `${prefix}${key} ${operator} ${transform ? transformed : value}`;
   };
 }

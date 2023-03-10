@@ -15,11 +15,11 @@ import type { Dictionary } from "@umatch/utils";
  */
 function toArray<T extends Payload | OneOrArray<Primitive>>(
   x?: T,
-  entriesCallback?: (entry: [string, Primitive]) => string,
+  entriesCallback?: (entry: [string, unknown]) => string,
 ): T extends null | undefined ? [] : T extends Dictionary ? string[] : AsArray<T>;
 function toArray(
   x?: Payload | OneOrArray<Primitive>,
-  entriesCallback: (entry: [string, Primitive]) => string = entryToString(),
+  entriesCallback: (entry: [string, unknown]) => string = entryToString(),
 ) {
   if (x == null) return [];
   if (x instanceof Array) return x;

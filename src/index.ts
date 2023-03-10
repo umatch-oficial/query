@@ -31,7 +31,7 @@ function isString(obj: unknown): obj is string {
   return typeof obj === "string";
 }
 
-function isPrimitive(obj: unknown): obj is Primitive {
+export function isPrimitive(obj: unknown): obj is Primitive {
   const isJSPrimitive = ["string", "boolean", "number"].includes(typeof obj);
   if (isJSPrimitive) return true;
 

@@ -12,10 +12,10 @@ import type { Moment } from "moment";
  * number => number
  * [string, number] => ('string', number)
  * Date => ISO date
+ *
+ * @throws if the value is not a [Primitive]{@link Primitive}
  */
-export default function toSQLValue(
-  x: Primitive | Primitive[],
-): string | boolean | number {
+export default function toSQLValue(x: unknown): string | boolean | number {
   if (x == null) {
     return "";
   }

@@ -13,14 +13,11 @@ export type Primitive = boolean | number | string | Date | DateTime | Moment;
 export type Payload = Dictionary<Primitive>;
 export type OneOrArray<T = unknown> = T | T[];
 export type AsArray<T> = T extends unknown[] ? T : T[];
-export type QueryAs = {
-  query: Query;
-  alias: string;
-};
 export type Conditions = {
+  alias?: string;
   select?: OneOrArray<string>;
-  from?: string | QueryAs;
-  join?: (string | QueryAs)[];
+  from?: string;
+  join?: string[];
   where?: OneOrArray<string> | Payload;
   groupBy?: OneOrArray<string>;
   having?: OneOrArray<string>;
@@ -43,6 +40,7 @@ function isPrimitive(obj: unknown): obj is Primitive {
 
 // Mapping from private property names to keys of Conditions
 const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
+  _alias: "alias",
   _selects: "select",
   _from: "from",
   _joins: "join",
@@ -56,9 +54,10 @@ const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
 };
 
 export default class Query<Result = unknown> {
+  private _alias: string;
   private _selects: string[];
-  private _from: string | QueryAs;
-  private _joins: (string | QueryAs)[];
+  private _from: string;
+  private _joins: string[];
   private _wheres: string[];
   private _groups: string[];
   private _havings: string[];
@@ -68,8 +67,20 @@ export default class Query<Result = unknown> {
   private _trx?: any;
 
   constructor(conditions?: Conditions) {
-    const { select, from, join, where, groupBy, having, orderBy, limit, offset, trx } =
-      conditions ?? {};
+    const {
+      alias,
+      select,
+      from,
+      join,
+      where,
+      groupBy,
+      having,
+      orderBy,
+      limit,
+      offset,
+      trx,
+    } = conditions ?? {};
+    this._alias = alias ?? "sub";
     this._selects = toArray(select);
     this._from = from ?? "";
     this._joins = toArray(join);
@@ -80,6 +91,29 @@ export default class Query<Result = unknown> {
     this._limit = limit;
     this._offset = offset;
     this._trx = trx;
+  }
+
+  /**
+   * Returns a string of the query to use inside another query.
+   */
+  private static _parseSubquery(query: Query): string {
+    return `(${query.build()}) AS ${query._alias}`;
+  }
+
+  /**
+   * Sets the alias that will be used in case this query becomes a subquery.
+   */
+  public as(alias: string): this {
+    this._alias = alias;
+    return this;
+  }
+
+  /**
+   * Sets the alias that will be used in case this query becomes a subquery.
+   */
+  public alias(alias: string): this {
+    this._alias = alias;
+    return this;
   }
 
   /**
@@ -102,25 +136,35 @@ export default class Query<Result = unknown> {
    *
    * @throws if the table has already been set
    */
-  public from(query: QueryAs): this;
+  public from(query: Query): this;
   /**
    * Sets the 'from' table.
    *
    * @throws if the table has already been set
    */
-  public from(from: string | QueryAs): this {
+  public from(from: string | Query): this {
     if (this._from) throw new Error("Query already has 'from'");
-    this._from = from;
+    this._from = typeof from === "string" ? from : Query._parseSubquery(from);
     return this;
   }
 
   private _join(
     joinType: "LEFT" | "INNER" | "OUTER",
-    table: string,
+    table: string | Query,
     on: string[] | Payload,
   ): void {
-    const ons = toArray(on, entryToString(false, table));
-    const clause = `${joinType} JOIN ${table} ON ${ons.join(" AND ")}`;
+    let tableAlias: string;
+    let joinTable: string;
+    if (typeof table === "string") {
+      tableAlias = table;
+      joinTable = table;
+    } else {
+      tableAlias = table._alias;
+      joinTable = Query._parseSubquery(table);
+    }
+
+    const ons = toArray(on, entryToString(false, tableAlias));
+    const clause = `${joinType} JOIN ${joinTable} ON ${ons.join(" AND ")}`;
     this.joinRaw(clause);
   }
 
@@ -129,7 +173,7 @@ export default class Query<Result = unknown> {
    *
    * Parses arrays of conditions, but does not transform values.
    */
-  public innerJoin(table: string, on: string[] | Payload): this {
+  public innerJoin(table: string | Query, on: string[] | Payload): this {
     this._join("INNER", table, on);
     return this;
   }
@@ -139,7 +183,7 @@ export default class Query<Result = unknown> {
    *
    * Parses arrays of conditions, but does not transform values.
    */
-  public leftJoin(table: string, on: string[] | Payload): this {
+  public leftJoin(table: string | Query, on: string[] | Payload): this {
     this._join("LEFT", table, on);
     return this;
   }
@@ -149,7 +193,7 @@ export default class Query<Result = unknown> {
    *
    * Parses arrays of conditions, but does not transform values.
    */
-  public outerJoin(table: string, on: string[] | Payload): this {
+  public outerJoin(table: string | Query, on: string[] | Payload): this {
     this._join("OUTER", table, on);
     return this;
   }
@@ -169,9 +213,7 @@ export default class Query<Result = unknown> {
   /**
    * Adds a join clause without parsing or transforming conditions.
    */
-  public joinRaw(join: string): this;
-  public joinRaw(query: QueryAs): this;
-  public joinRaw(clause: string | QueryAs): this {
+  public joinRaw(clause: string): this {
     this._joins.push(clause);
     return this;
   }
@@ -418,18 +460,6 @@ export default class Query<Result = unknown> {
   }
 
   /**
-   * Returns a special object to be used as a sub-query in
-   * the 'from' or 'join' argument of a new query.
-   * @param alias
-   */
-  public as(alias = "q"): QueryAs {
-    return {
-      query: this,
-      alias,
-    };
-  }
-
-  /**
    * Adds a limit and an offset to simulate pagination.
    */
   public forPage(page = 1, pageSize = 10): this {
@@ -454,11 +484,6 @@ export default class Query<Result = unknown> {
       return Array.isArray(value) ? [...value] : value;
     });
     return new Query(conditionsObject as Conditions);
-  }
-
-  private _parseSubquery(value: string | QueryAs): string {
-    if (typeof value === "string") return value;
-    return `(${value.query.build()}) AS ${value.alias}`;
   }
 
   /**
@@ -494,13 +519,10 @@ export default class Query<Result = unknown> {
       throw new Error("Cannot build query with 'having', but missing 'group by'");
     }
 
-    const _from = this._parseSubquery(this._from);
-    const _joins = this._joins.map(this._parseSubquery);
-
     return [
       `SELECT ${this._selects?.join(",\n  ") || "*"}`,
-      `FROM ${_from}`,
-      this._buildClauseString(_joins, "", "\n"),
+      `FROM ${this._from}`,
+      this._buildClauseString(this._joins, "", "\n"),
       this._buildClauseString(this._wheres, "WHERE", "\n  AND "),
       this._buildClauseString(this._groups, "GROUP BY"),
       this._buildClauseString(this._havings, "HAVING"),

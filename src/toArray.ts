@@ -1,6 +1,6 @@
 import entryToString from "./entryToString";
 
-import type { AsArray, OneOrArray, Payload, Primitive, QueryAs } from "./index";
+import type { AsArray, OneOrArray, Payload, Primitive } from "./index";
 import type { Dictionary } from "@umatch/utils";
 
 /**
@@ -13,12 +13,12 @@ import type { Dictionary } from "@umatch/utils";
  * [string]   => [string]
  * { id: 1 }  => ['id = 1']
  */
-function toArray<T extends Payload | OneOrArray<Primitive | QueryAs>>(
+function toArray<T extends Payload | OneOrArray<Primitive>>(
   x?: T,
   entriesCallback?: (entry: [string, Primitive]) => string,
 ): T extends null | undefined ? [] : T extends Dictionary ? string[] : AsArray<T>;
 function toArray(
-  x?: Payload | OneOrArray<Primitive | QueryAs>,
+  x?: Payload | OneOrArray<Primitive>,
   entriesCallback: (entry: [string, Primitive]) => string = entryToString(),
 ) {
   if (x == null) return [];

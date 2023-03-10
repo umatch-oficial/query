@@ -41,6 +41,20 @@ function isPrimitive(obj: unknown): obj is Primitive {
   return ["Date", "DateTime", "Moment"].includes(obj?.constructor.name as string);
 }
 
+// Mapping from private property names to keys of Conditions
+const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
+  _selects: "select",
+  _from: "from",
+  _joins: "join",
+  _wheres: "where",
+  _groups: "groupBy",
+  _havings: "having",
+  _orders: "orderBy",
+  _limit: "limit",
+  _offset: "offset",
+  _trx: "trx",
+};
+
 export default class Query<Result = unknown> {
   private _selects: string[];
   private _from: string | QueryAs;
@@ -52,18 +66,6 @@ export default class Query<Result = unknown> {
   private _limit?: number;
   private _offset?: number;
   private _trx?: any;
-  private static propertyToCondition = {
-    _selects: "select",
-    _from: "from",
-    _joins: "join",
-    _wheres: "where",
-    _groups: "groupBy",
-    _havings: "having",
-    _orders: "orderBy",
-    _limit: "limit",
-    _offset: "offset",
-    _trx: "trx",
-  };
 
   constructor(conditions?: Conditions) {
     const { select, from, join, where, groupBy, having, orderBy, limit, offset, trx } =
@@ -441,17 +443,17 @@ export default class Query<Result = unknown> {
   /**
    * Returns a copy of the current query.
    */
-  public clone(exclude: string[]): Query {
+  public clone(exclude: (keyof Conditions)[]): Query {
     const copiedProperties = { ...this } as unknown as Dictionary;
     // rename properties to match the constructor names
-    let conditionsObject = rename(copiedProperties, Query.propertyToCondition);
+    let conditionsObject = rename(copiedProperties, PROPERTY_TO_CONDITION);
     // remove some properties
     if (exclude) remove(conditionsObject, exclude);
     // duplicate arrays, otherwise their references get passed along
     conditionsObject = apply(conditionsObject, (value) => {
       return Array.isArray(value) ? [...value] : value;
     });
-    return new Query(conditionsObject);
+    return new Query(conditionsObject as Conditions);
   }
 
   private _parseSubquery(value: string | QueryAs): string {

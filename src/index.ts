@@ -2,6 +2,7 @@ import { isJSObject } from "@umatch/utils";
 import { apply, remove, rename } from "@umatch/utils/object";
 
 import entryToString from "./entryToString";
+import getTableAndAlias from "./getTableAndAlias";
 import toArray from "./toArray";
 import toSQLValue from "./toSQLValue";
 
@@ -98,6 +99,8 @@ export class Query<Result = unknown> {
   private static _parseSubquery(query: Query): string {
     return `(${query.build()}) AS ${query._alias}`;
   }
+
+  public static getTableAndAlias = getTableAndAlias;
 
   /**
    * Sets the alias that will be used in case this query becomes a subquery.

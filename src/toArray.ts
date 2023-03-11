@@ -1,7 +1,7 @@
 import entryToString from "./entryToString";
 
-import type { AsArray, OneOrArray, Payload, Primitive } from "./index";
-import type { Dictionary } from "@umatch/utils";
+import type { Payload, Primitive } from "./index";
+import type { Dictionary, OneOrArray } from "@umatch/utils";
 
 /**
  * Converts conditions to arrays.
@@ -16,7 +16,13 @@ import type { Dictionary } from "@umatch/utils";
 function toArray<T extends Payload | OneOrArray<Primitive>>(
   x?: T,
   entriesCallback?: (entry: [string, unknown]) => string,
-): T extends null | undefined ? [] : T extends Dictionary ? string[] : AsArray<T>;
+): T extends null | undefined
+  ? []
+  : T extends Dictionary
+  ? string[]
+  : T extends unknown[]
+  ? T
+  : T[];
 function toArray(
   x?: Payload | OneOrArray<Primitive>,
   entriesCallback: (entry: [string, unknown]) => string = entryToString(),

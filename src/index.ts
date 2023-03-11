@@ -1,18 +1,17 @@
-import { Dictionary } from "@umatch/utils";
-import { apply, remove, rename, isPlainObject } from "@umatch/utils/object";
+import { isJSObject } from "@umatch/utils";
+import { apply, remove, rename } from "@umatch/utils/object";
 
 import entryToString from "./entryToString";
 import toArray from "./toArray";
 import toSQLValue from "./toSQLValue";
 
 import type { Operator } from "./getOperator";
+import type { Dictionary, OneOrArray } from "@umatch/utils";
 import type { DateTime } from "luxon";
 import type { Moment } from "moment";
 
 export type Primitive = boolean | number | string | Date | DateTime | Moment;
 export type Payload = Dictionary<Primitive>;
-export type OneOrArray<T = unknown> = T | T[];
-export type AsArray<T> = T extends unknown[] ? T : T[];
 export type Conditions = {
   alias?: string;
   select?: OneOrArray<string>;
@@ -256,7 +255,7 @@ export class Query<Result = unknown> {
     if (value === undefined) {
       if (valueOrOperator === undefined) {
         // case 1
-        if (!isPlainObject(fieldOrClauses)) throw new Error("payload must be an object");
+        if (!isJSObject(fieldOrClauses)) throw new Error("payload must be an object");
 
         const wheres = toArray(fieldOrClauses);
         wheres.forEach((where) => this._wheres.push(where), this);

@@ -3,6 +3,7 @@ import { apply, remove, rename } from "@umatch/utils/object";
 
 import entryToString from "./entryToString";
 import getTableAndAlias from "./getTableAndAlias";
+import RawValue from "./RawValue";
 import toArray from "./toArray";
 import toSQLValue from "./toSQLValue";
 
@@ -11,7 +12,8 @@ import type { Dictionary, OneOrArray } from "@umatch/utils";
 import type { DateTime } from "luxon";
 import type { Moment } from "moment";
 
-export type Primitive = boolean | number | string | Date | DateTime | Moment;
+export type JSPrimitive = boolean | number | string;
+export type Primitive = JSPrimitive | Date | DateTime | Moment;
 export type Payload = Dictionary<Primitive>;
 export type Conditions = {
   alias?: string;
@@ -35,7 +37,7 @@ export function isPrimitive(obj: unknown): obj is Primitive {
   const isJSPrimitive = ["string", "boolean", "number"].includes(typeof obj);
   if (isJSPrimitive) return true;
 
-  return ["Date", "DateTime", "Moment"].includes(obj?.constructor.name as string);
+  return ["Date", "DateTime", "Moment"].includes(obj?.constructor.name!);
 }
 
 // Mapping from private property names to keys of Conditions
@@ -101,6 +103,10 @@ export class Query<Result = unknown> {
   }
 
   public static getTableAndAlias = getTableAndAlias;
+
+  public static raw(value: JSPrimitive): RawValue {
+    return new RawValue(value);
+  }
 
   /**
    * Sets the alias that will be used in case this query becomes a subquery.

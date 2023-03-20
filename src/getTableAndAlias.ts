@@ -14,14 +14,14 @@
  * getTableAndAlias('images im')
  * // ['documents', 'doc']
  * getTableAndAlias('documents')
- * // ['users', 'u']
- * getTableAndAlias('users', (name: string) => name[0]))
+ * // ['users', 'use']
+ * getTableAndAlias('users', (name: string) => name.slice(0, 3))
  */
 export default function getTableAndAlias(
   tableString: string,
-  makeAlias: (name: string) => string = (name: string) => name.slice(0, 3),
+  makeAlias: (name: string) => string = (name: string) => name[0],
 ): [string, string] {
-  const [tableName, alias] = tableString.split(/ (as )?/i, 2);
+  const [tableName, _, alias] = tableString.split(/ (as )?/i);
   if (alias) return [tableName, alias];
   return [tableName, makeAlias(tableName)];
 }

@@ -25,11 +25,8 @@
         "lint": "eslint . --ext=.ts",
         "prepublishOnly": "npm run lint && npm run build && npm test",
         "prepare": "npm run build",
-        "preversion": "npm run lint && npm run build && npm test",
-        "postversion": "git push && git push --tags",
-        "patch-and-publish": "npm version patch && npm publish --ignore-scripts",
-        "minor-and-publish": "npm version minor && npm publish --ignore-scripts",
-        "major-and-publish": "npm version major && npm publish --ignore-scripts"
+        "push-publish": "git push --follow-tags && npm publish --ignore-scripts",
+        "release": "npm run lint && npm run build && npm test && commit-and-tag-version"
     },
     "config": {
         "commitizen": {

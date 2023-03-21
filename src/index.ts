@@ -171,10 +171,11 @@ export class Query<Result = unknown> {
     on: string[] | Payload,
   ): void {
     let tableAlias: string;
+    let tableName: string;
     let joinTable: string;
     if (typeof table === "string") {
-      tableAlias = table;
-      joinTable = table;
+      [tableName, tableAlias] = getTableAndAlias(table);
+      joinTable = `${tableName} AS ${tableAlias}`;
     } else {
       tableAlias = table._alias;
       joinTable = Query._parseSubquery(table);

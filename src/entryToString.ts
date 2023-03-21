@@ -11,17 +11,13 @@ import toSQLValue from "./toSQLValue";
  * (present in the string or auto-generated).
  *
  * @param {boolean} [transform = true] Whether to transform values with toSQLValue(). Default: true
- * @param {string} [table] The name of the table
+ * @param {string} [alias] An alias to prefix properties
  */
 export default function entryToString(
   transform: boolean = true,
-  table?: string,
+  alias?: string,
 ): (entry: [string, unknown]) => string {
-  let prefix = "";
-  if (table) {
-    const [_, alias] = getTableAndAlias(table);
-    prefix = `${alias ?? table}.`;
-  }
+  const prefix = alias ? `${alias}.` : "";
   return ([key, val]) => {
     const transformed = toSQLValue(val); // this ensures val is a Primitive
     const [operator, value] = getOperator(val as Primitive);

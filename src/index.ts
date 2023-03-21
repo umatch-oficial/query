@@ -1,4 +1,4 @@
-import { isJSObject } from "@umatch/utils";
+import { isJSObject, isString } from "@umatch/utils";
 import { apply, remove, rename } from "@umatch/utils/object";
 
 import entryToString from "./entryToString";
@@ -28,10 +28,6 @@ export type Conditions = {
   offset?: number;
   trx?: any;
 };
-
-function isString(obj: unknown): obj is string {
-  return typeof obj === "string";
-}
 
 export function isPrimitive(obj: unknown): obj is Primitive {
   const isJSPrimitive = ["string", "boolean", "number"].includes(typeof obj);

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.2.2](https://github.com/umatch-oficial/query/compare/v2.2.1...v2.2.2) (2023-03-21)
+
+
+### Bug Fixes
+
+* allow { from: Query } in constructor ([5ee6695](https://github.com/umatch-oficial/query/commit/5ee66952d17e48d22732b15baa703c813484a908))
+
 ## [2.2.1](https://github.com/umatch-oficial/query/compare/v2.2.0...v2.2.1) (2023-03-21)
 
 

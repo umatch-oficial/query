@@ -18,7 +18,7 @@ export type Payload = Dictionary<Primitive>;
 export type Conditions = {
   alias?: string;
   select?: OneOrArray<string>;
-  from?: string;
+  from?: string | Query;
   join?: string[];
   where?: OneOrArray<string> | Payload;
   groupBy?: OneOrArray<string>;
@@ -84,7 +84,11 @@ export class Query<Result = unknown> {
     } = conditions ?? {};
     this._alias = alias ?? "sub";
     this._selects = toArray(select);
-    this._from = from ?? "";
+    this._from = from
+      ? typeof from === "string"
+        ? from
+        : Query._parseSubquery(from)
+      : "";
     this._joins = toArray(join);
     this._wheres = toArray(where);
     this._groups = toArray(groupBy);

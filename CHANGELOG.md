@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.0.0](https://github.com/umatch-oficial/query/compare/v2.2.2...v3.0.0) (2023-03-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* Query.where() no longer accepts an array of arguments
+
+### Bug Fixes
+
+* _join() now correctly adds an alias ([7b1e3da](https://github.com/umatch-oficial/query/commit/7b1e3dab48744b349901431a1085d5d4051821ae))
+* import unused type in JSDoc ([4e37449](https://github.com/umatch-oficial/query/commit/4e37449d5dc4e286e968a5e4a4c97d7c69a1c79c))
+* revert 80ac17a ([3631d1d](https://github.com/umatch-oficial/query/commit/3631d1d7ed437bf77bd504116b1b49268bfa9c5f))
+
 ## [2.2.2](https://github.com/umatch-oficial/query/compare/v2.2.1...v2.2.2) (2023-03-21)
 
 

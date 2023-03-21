@@ -108,6 +108,15 @@ export class Query<Result = unknown> {
 
   public static getTableAndAlias = getTableAndAlias;
 
+  /**
+   * Wraps a value so that it doesn't get transformed.
+   *
+   * Use this method to produce raw SQL, which should not be pre-processed
+   * by the query builder.
+   *
+   * @example
+   * query.where("created_at", ">", Query.raw("NOW() - INTERVAL '1 day'"))
+   */
   public static raw(value: JSPrimitive): RawValue {
     return new RawValue(value);
   }
@@ -257,8 +266,8 @@ export class Query<Result = unknown> {
   /**
    * Adds a 'where' condition.
    *
-   * If given a dictionary, iterates over entries, adding one condition per entry.
-   * If given a string and a value, transforms the value using [toSQLValue()]{@link toSQLValue}.
+   * If given a dictionary, iterates over entries, adding one condition per entry.<br>
+   * If given a string and a value, transforms the value using [toSQLValue()]{@link toSQLValue}.<br>
    * If given two strings and a value, uses the second string as the operator.
    */
   public where(
@@ -318,7 +327,7 @@ export class Query<Result = unknown> {
   /**
    * Adds a 'where in' condition.
    *
-   * If given a dictionary, iterates over entries, adding one condition per entry.
+   * If given a dictionary, iterates over entries, adding one condition per entry.<br>
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
   public whereIn(
@@ -352,7 +361,7 @@ export class Query<Result = unknown> {
   /**
    * Adds a 'where not in' condition.
    *
-   * If given a dictionary, iterates over entries, adding one condition per entry.
+   * If given a dictionary, iterates over entries, adding one condition per entry.<br>
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
   public whereNotIn(
@@ -552,6 +561,9 @@ export class Query<Result = unknown> {
       .join("\n");
   }
 
+  /**
+   * The method that is used to run queries.
+   */
   static _run?: (query: string) => Promise<unknown>;
 
   /**
@@ -564,7 +576,7 @@ export class Query<Result = unknown> {
   /**
    * Builds and runs the query, returning the result.
    *
-   * Requires the 'init' method to be called first.
+   * @throws if the 'init' method hasn't been called
    */
   async run(): Promise<Result[]> {
     if (!Query._run) throw new Error("Cannot run without executing Query.init()");

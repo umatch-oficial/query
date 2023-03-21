@@ -1,8 +1,9 @@
-import { Primitive } from "./index";
 import RawValue from "./RawValue";
 
 import type { DateTime } from "luxon";
 import type { Moment } from "moment";
+
+/** @typedef {import { Primitive } from "./index"} Primitive */
 
 /**
  * Represents values as expected by Postgres.

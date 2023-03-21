@@ -57,6 +57,7 @@
         "typescript": "^4.9.4"
     },
     "dependencies": {
-        "@umatch/utils": "^4.0.0"
+        "@umatch/utils": "^4.0.0",
+        "commit-and-tag-version": "^11.2.0"
     }
 }

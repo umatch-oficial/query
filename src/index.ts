@@ -1,4 +1,4 @@
-import { isArray, isJSObject } from "@umatch/utils";
+import { isJSObject } from "@umatch/utils";
 import { apply, remove, rename } from "@umatch/utils/object";
 
 import entryToString from "./entryToString";
@@ -242,14 +242,6 @@ export class Query<Result = unknown> {
    */
   public where(payload: Payload): this;
   /**
-   * Adds 'where' conditions.
-   *
-   * Iterates over entries, adding one condition per entry.
-   */
-  public where(
-    conditions: (Payload | [string, Primitive] | [string, Operator, Primitive])[],
-  ): this;
-  /**
    * Adds a 'where' condition.
    *
    * Transforms the value using [toSQLValue()]{@link toSQLValue}.
@@ -267,64 +259,36 @@ export class Query<Result = unknown> {
    * If given a dictionary, iterates over entries, adding one condition per entry.
    * If given a string and a value, transforms the value using [toSQLValue()]{@link toSQLValue}.
    * If given two strings and a value, uses the second string as the operator.
-   * If given an array, applies the previous treatments to each element.
    */
   public where(
-    fieldOrPayloadOrConditions:
-      | string
-      | Payload
-      | (Payload | [string, Primitive] | [string, Operator, Primitive])[],
+    fieldOrClauses: string | Payload,
     valueOrOperator?: Primitive | Operator,
     value?: Primitive,
   ): this {
     if (value === undefined) {
       if (valueOrOperator === undefined) {
         // case 1
-        if (isArray(fieldOrPayloadOrConditions)) {
-          fieldOrPayloadOrConditions.forEach(
-            (args) =>
-              isArray(args)
-                ? args[2]
-                  ? this.where(
-                      args[0] as string,
-                      args[1] as Operator,
-                      args[2] as Primitive,
-                    )
-                  : this.where(args[0] as string, args[1] as Primitive)
-                : this.where(args),
-            this,
-          );
-          return this;
-        }
-        if (!isJSObject(fieldOrPayloadOrConditions)) {
-          throw new Error("payload must be an object");
-        }
+        if (!isJSObject(fieldOrClauses)) throw new Error("payload must be an object");
 
-        const wheres = toArray(fieldOrPayloadOrConditions);
+        const wheres = toArray(fieldOrClauses);
         wheres.forEach((where) => this._wheres.push(where), this);
         return this;
       } else {
         // case 2
-        if (!isString(fieldOrPayloadOrConditions)) {
-          throw new Error("field must be a string");
-        }
+        if (!isString(fieldOrClauses)) throw new Error("field must be a string");
         if (!isPrimitive(valueOrOperator)) throw new Error("value must be a Primitive");
 
-        this._wheres.push(
-          `${fieldOrPayloadOrConditions} = ${toSQLValue(valueOrOperator)}`,
-        );
+        this._wheres.push(`${fieldOrClauses} = ${toSQLValue(valueOrOperator)}`);
         return this;
       }
     }
 
     // case 3
-    if (!isString(fieldOrPayloadOrConditions)) throw new Error("field must be a string");
+    if (!isString(fieldOrClauses)) throw new Error("field must be a string");
     if (!isString(valueOrOperator)) throw new Error("operator must be a string");
     if (!isPrimitive(valueOrOperator)) throw new Error("value must be a Primitive");
 
-    this._wheres.push(
-      `${fieldOrPayloadOrConditions} ${valueOrOperator} ${toSQLValue(value)}`,
-    );
+    this._wheres.push(`${fieldOrClauses} ${valueOrOperator} ${toSQLValue(value)}`);
     return this;
   }
 

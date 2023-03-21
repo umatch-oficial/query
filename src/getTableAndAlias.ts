@@ -5,15 +5,15 @@
  * the table name using the makeAlias function.
  *
  * @param tableString A string that contains the name of a table and optionally an alias for it.
- * @param makeAlias A function that makes an alias out of a table's name. Default: first three letters.
+ * @param makeAlias A function that makes an alias out of a table's name. Default: first letter.
  *
  * @example
  * // ['users', 'u']
- * getTableAndAlias('users as u')
+ * getTableAndAlias('users')
  * // ['images', 'im']
  * getTableAndAlias('images im')
  * // ['documents', 'doc']
- * getTableAndAlias('documents')
+ * getTableAndAlias('documents as doc')
  * // ['users', 'use']
  * getTableAndAlias('users', (name: string) => name.slice(0, 3))
  */

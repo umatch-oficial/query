@@ -496,7 +496,7 @@ export class Query<Result = unknown> {
   /**
    * Returns a copy of the current query.
    */
-  public clone(exclude: (keyof Conditions)[]): Query {
+  public clone(exclude?: (keyof Conditions)[]): Query {
     const copiedProperties = { ...this } as unknown as Dictionary;
     // rename properties to match the constructor names
     let conditionsObject = rename(copiedProperties, PROPERTY_TO_CONDITION);

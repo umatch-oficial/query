@@ -1,5 +1,4 @@
 import getOperator from "./getOperator";
-import getTableAndAlias from "./getTableAndAlias";
 import { Primitive } from "./index";
 import toSQLValue from "./toSQLValue";
 

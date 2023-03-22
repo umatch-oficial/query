@@ -134,11 +134,19 @@ export class Query<Result = unknown> {
   }
 
   /**
+   * Adds the field to the 'select' clause.
+   */
+  public select(field: string): this;
+  /**
+   * Adds the fields to the 'select' clause.
+   */
+  public select(fields: string[]): this;
+  /**
    * Adds one or more fields to the 'select' clause.
    */
-  public select(clause: OneOrArray<string>): this {
-    const fields = toArray(clause);
-    fields.forEach((field) => this._selects.push(field), this);
+  public select(fields: OneOrArray<string>): this {
+    const _fields = toArray(fields);
+    _fields.forEach((field) => this._selects.push(field), this);
     return this;
   }
 

@@ -1,4 +1,4 @@
-import { isJSObject, isString } from "@umatch/utils";
+import { isArray, isJSObject, isString } from "@umatch/utils";
 import { apply, remove, rename } from "@umatch/utils/object";
 
 import entryToString from "./entryToString";
@@ -512,7 +512,7 @@ export class Query<Result = unknown> {
     if (exclude) remove(conditionsObject, exclude);
     // duplicate arrays, otherwise their references get passed along
     conditionsObject = apply(conditionsObject, (value) => {
-      return Array.isArray(value) ? [...value] : value;
+      return isArray(value) ? [...value] : value;
     });
     return new Query(conditionsObject as Conditions);
   }
@@ -535,7 +535,7 @@ export class Query<Result = unknown> {
     name: string,
     separator: string = ",\n  ",
   ): string {
-    if (Array.isArray(conditions)) {
+    if (isArray(conditions)) {
       return conditions.length > 0 ? `${name} ${conditions.join(separator)}` : "";
     }
     return conditions ? `${name} ${conditions}` : "";

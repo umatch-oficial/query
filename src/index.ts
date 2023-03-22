@@ -246,7 +246,7 @@ export class Query<Result = unknown> {
    *
    * Iterates over entries, adding one condition per entry.
    */
-  public where(payload: Payload): this;
+  public where(conditions: Payload): this;
   /**
    * Adds a 'where' condition.
    *
@@ -267,34 +267,34 @@ export class Query<Result = unknown> {
    * If given two strings and a value, uses the second string as the operator.
    */
   public where(
-    fieldOrClauses: string | Payload,
+    fieldOrConditions: string | Payload,
     valueOrOperator?: Primitive | Operator,
     value?: Primitive,
   ): this {
     if (value === undefined) {
       if (valueOrOperator === undefined) {
         // case 1
-        if (!isJSObject(fieldOrClauses)) throw new Error("payload must be an object");
+        if (!isJSObject(fieldOrConditions)) throw new Error("payload must be an object");
 
-        const wheres = toArray(fieldOrClauses);
+        const wheres = toArray(fieldOrConditions);
         wheres.forEach((where) => this._wheres.push(where), this);
         return this;
       } else {
         // case 2
-        if (!isString(fieldOrClauses)) throw new Error("field must be a string");
+        if (!isString(fieldOrConditions)) throw new Error("field must be a string");
         if (!isPrimitive(valueOrOperator)) throw new Error("value must be a Primitive");
 
-        this._wheres.push(`${fieldOrClauses} = ${toSQLValue(valueOrOperator)}`);
+        this._wheres.push(`${fieldOrConditions} = ${toSQLValue(valueOrOperator)}`);
         return this;
       }
     }
 
     // case 3
-    if (!isString(fieldOrClauses)) throw new Error("field must be a string");
+    if (!isString(fieldOrConditions)) throw new Error("field must be a string");
     if (!isString(valueOrOperator)) throw new Error("operator must be a string");
     if (!isPrimitive(valueOrOperator)) throw new Error("value must be a Primitive");
 
-    this._wheres.push(`${fieldOrClauses} ${valueOrOperator} ${toSQLValue(value)}`);
+    this._wheres.push(`${fieldOrConditions} ${valueOrOperator} ${toSQLValue(value)}`);
     return this;
   }
 
@@ -313,7 +313,7 @@ export class Query<Result = unknown> {
    *
    * Iterates over entries, adding one condition per entry.
    */
-  public whereIn(clause: Dictionary<Primitive[]>): this;
+  public whereIn(conditions: Dictionary<Primitive[]>): this;
   /**
    * Adds a 'where in' condition.
    *
@@ -327,14 +327,14 @@ export class Query<Result = unknown> {
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
   public whereIn(
-    fieldOrClause: string | Dictionary<Primitive[]>,
+    fieldOrConditions: string | Dictionary<Primitive[]>,
     values?: Primitive[],
   ): this {
     if (values) {
-      this._wheres.push(`${fieldOrClause} IN ${toSQLValue(values)}`);
+      this._wheres.push(`${fieldOrConditions} IN ${toSQLValue(values)}`);
     } else {
-      if (typeof fieldOrClause === "string") throw new Error("Missing values");
-      Object.entries(fieldOrClause).forEach(
+      if (typeof fieldOrConditions === "string") throw new Error("Missing values");
+      Object.entries(fieldOrConditions).forEach(
         ([field, vals]) => this.whereIn(field, vals),
         this,
       );
@@ -347,7 +347,7 @@ export class Query<Result = unknown> {
    *
    * Iterates over entries, adding one condition per entry.
    */
-  public whereNotIn(clause: Dictionary<Primitive[]>): this;
+  public whereNotIn(condition: Dictionary<Primitive[]>): this;
   /**
    * Adds a 'where not in' condition.
    *
@@ -361,14 +361,14 @@ export class Query<Result = unknown> {
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
   public whereNotIn(
-    fieldOrClause: string | Dictionary<Primitive[]>,
+    fieldOrConditions: string | Dictionary<Primitive[]>,
     values?: Primitive[],
   ): this {
     if (values) {
-      this._wheres.push(`${fieldOrClause} NOT IN ${toSQLValue(values)}`);
+      this._wheres.push(`${fieldOrConditions} NOT IN ${toSQLValue(values)}`);
     } else {
-      if (typeof fieldOrClause === "string") throw new Error("Missing values");
-      Object.entries(fieldOrClause).forEach(
+      if (typeof fieldOrConditions === "string") throw new Error("Missing values");
+      Object.entries(fieldOrConditions).forEach(
         ([field, vals]) => this.whereNotIn(field, vals),
         this,
       );
@@ -510,7 +510,7 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Joins an array of clause strings using the specified separator (or uses a single
+   * Joins an array of clause parts using the specified separator (or uses a single
    * provided clause) and adds the clause name to the beginning, returning a final
    * string that can be used in a query.
    *
@@ -523,14 +523,14 @@ export class Query<Result = unknown> {
    * this._buildClauseString(['a = 1', 'b = 2'], 'WHERE', ' AND ')
    */
   private _buildClauseString(
-    clauses: OneOrArray<string | number> | undefined,
+    conditions: OneOrArray<string | number> | undefined,
     name: string,
     separator: string = ",\n  ",
   ): string {
-    if (Array.isArray(clauses)) {
-      return clauses.length > 0 ? `${name} ${clauses.join(separator)}` : "";
+    if (Array.isArray(conditions)) {
+      return conditions.length > 0 ? `${name} ${conditions.join(separator)}` : "";
     }
-    return clauses ? `${name} ${clauses}` : "";
+    return conditions ? `${name} ${conditions}` : "";
   }
 
   /**

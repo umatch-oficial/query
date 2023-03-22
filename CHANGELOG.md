@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.0.1](https://github.com/umatch-oficial/query/compare/v3.0.0...v3.0.1) (2023-03-22)
+
+
+### Bug Fixes
+
+* **deps:** move commit-and-tag-version to devDependencies ([d932587](https://github.com/umatch-oficial/query/commit/d93258762c20f5fc3a9cca8e8fa047633df04fea))
+* **types:** mark first parameter of Query.clone() as optional ([5de364f](https://github.com/umatch-oficial/query/commit/5de364f2bfc5b9003c2c758fd9db84c285ecd72d))
+
 ## [3.0.0](https://github.com/umatch-oficial/query/compare/v2.2.2...v3.0.0) (2023-03-21)
 
 

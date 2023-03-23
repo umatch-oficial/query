@@ -26,7 +26,7 @@ export default function toSQLValue(x: unknown): string | boolean | number {
 
   switch (x.constructor?.name) {
     case "Array":
-      return `(${(x as unknown[]).map(toSQLValue).join(",")})`;
+      return `(${(x as unknown[]).map(toSQLValue).join(", ")})`;
     case "Date":
     case "Moment":
       return `'${(x as Date | Moment).toISOString()}'`;

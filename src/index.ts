@@ -436,16 +436,32 @@ export class Query<Result = unknown> {
   /**
    * Adds a column to the 'group by' clause.
    */
+  public groupBy(field: string): this;
+  /**
+   * Adds columns to the 'group by' clause.
+   */
+  public groupBy(fields: string[]): this;
+  /**
+   * Adds columns to the 'group by' clause.
+   */
   public groupBy(fields: OneOrArray<string>): this {
     toArray(fields).forEach((field) => this._groups.push(field));
     return this;
   }
 
   /**
-   * Adds a column to the 'having' clause.
+   * Adds a condition to the 'having' clause.
    */
-  public having(fields: OneOrArray<string>): this {
-    toArray(fields).forEach((field) => this._havings.push(field));
+  public having(condition: string): this;
+  /**
+   * Adds conditions to the 'having' clause.
+   */
+  public having(conditions: string[]): this;
+  /**
+   * Adds conditions to the 'having' clause.
+   */
+  public having(conditions: OneOrArray<string>): this {
+    toArray(conditions).forEach((condition) => this._havings.push(condition));
     return this;
   }
 

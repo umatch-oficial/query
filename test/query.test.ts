@@ -54,6 +54,12 @@ describe("Query class", () => {
   test("throws an error if there is no 'from' clause", () => {
     expect(() => new Query().build()).toThrow("Cannot build");
   });
+
+  test("throws an error if there is a 'having' clause, but no 'group by' clause", () => {
+    expect(() => {
+      new Query({ having: "" }).build();
+    }).toThrow("Cannot build");
+  });
 });
 
 describe("query.where()", () => {
@@ -154,4 +160,50 @@ describe("query.whereRaw()", () => {
       "SELECT *\nFROM posts\nWHERE created_at > NOW() - INTERVAL '1 day'\n  AND updated_at > NOW() - INTERVAL '1 day'",
     );
   });
+});
+
+describe("query.groupBy()", () => {
+  test("works with single field", () => {
+    expect(
+      new Query({ select: ["post_id", "count(*)"], from: "comments" })
+        .groupBy("post_id")
+        .build(),
+    ).toBe("SELECT post_id,\n  count(*)\nFROM comments\nGROUP BY post_id");
+  });
+  test("works with array of fields", () => {
+    expect(
+      new Query({ select: ["post_id", "user_id", "count(*)"], from: "comments" })
+        .groupBy(["post_id", "user_id"])
+        .build(),
+    ).toBe(
+      "SELECT post_id,\n  user_id,\n  count(*)\nFROM comments\nGROUP BY post_id,\n  user_id",
+    );
+  });
+});
+
+describe("query.having()", () => {
+  test("works with single condition", () => {
+    expect(
+      new Query({ select: ["post_id", "count(*)"], from: "comments", groupBy: "post_id" })
+        .having("count(*) >= 10")
+        .build(),
+    ).toBe(
+      "SELECT post_id,\n  count(*)\nFROM comments\nGROUP BY post_id\nHAVING count(*) >= 10",
+    );
+  });
+  test("works with array of conditions", () => {
+    expect(
+      new Query({ select: ["post_id", "count(*)"], from: "comments", groupBy: "post_id" })
+        .having(["count(*) >= 10", "count(*) < 20"])
+        .build(),
+    ).toBe(
+      "SELECT post_id,\n  count(*)\nFROM comments\nGROUP BY post_id\nHAVING count(*) >= 10,\n  count(*) < 20",
+    );
+  });
+});
+
+test("query.orderBy()", () => {
+  expect(new Query({ from: "users" }).orderBy("created_at", "desc").build()).toBe(
+    "SELECT *\nFROM users\nORDER BY created_at desc",
+  );
 });

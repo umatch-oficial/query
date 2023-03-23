@@ -64,146 +64,240 @@ describe("Query class", () => {
 
 describe("query.where()", () => {
   test("works with Payload", () => {
-    expect(
-      new Query({ from: "comments" }).where({ post_id: 1, user_id: 1 }).build(),
-    ).toBe("SELECT *\nFROM comments\nWHERE post_id = 1\n  AND user_id = 1");
+    const queryString = new Query({ from: "comments" })
+      .where({ post_id: 1, user_id: 1 })
+      .build();
+    expect("\n" + queryString).toBe(`
+SELECT *
+FROM comments
+WHERE post_id = 1
+  AND user_id = 1`);
   });
   test("works with field and value", () => {
-    expect(new Query({ from: "comments" }).where("content", "Hello").build()).toBe(
-      "SELECT *\nFROM comments\nWHERE content = 'Hello'",
+    const queryString = new Query({ from: "comments" }).where("content", "Hello").build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM comments
+WHERE content = 'Hello'`,
     );
   });
   test("works with field, value and operator", () => {
-    expect(new Query({ from: "comments" }).where("upvotes", ">", 100).build()).toBe(
-      "SELECT *\nFROM comments\nWHERE upvotes > 100",
+    const queryString = new Query({ from: "comments" })
+      .where("upvotes", ">", 100)
+      .build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM comments
+WHERE upvotes > 100`,
     );
   });
 });
 
 test("query.whereBetween()", () => {
-  expect(new Query({ from: "comments" }).whereBetween("upvotes", [0, 10]).build()).toBe(
-    "SELECT *\nFROM comments\nWHERE upvotes BETWEEN 0 AND 10",
+  const queryString = new Query({ from: "comments" })
+    .whereBetween("upvotes", [0, 10])
+    .build();
+  expect("\n" + queryString).toBe(
+    `
+SELECT *
+FROM comments
+WHERE upvotes BETWEEN 0 AND 10`,
   );
 });
 
 describe("query.whereIn()", () => {
   test("works with Payload", () => {
-    expect(new Query({ from: "users" }).whereIn({ name: ["Alice", "Bob"] }).build()).toBe(
-      "SELECT *\nFROM users\nWHERE name IN ('Alice', 'Bob')",
+    const queryString = new Query({ from: "users" })
+      .whereIn({ name: ["Alice", "Bob"] })
+      .build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM users
+WHERE name IN ('Alice', 'Bob')`,
     );
   });
   test("works with field and values", () => {
-    expect(new Query({ from: "users" }).whereIn("id", [1, 2]).build()).toBe(
-      "SELECT *\nFROM users\nWHERE id IN (1, 2)",
+    const queryString = new Query({ from: "users" }).whereIn("id", [1, 2]).build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM users
+WHERE id IN (1, 2)`,
     );
   });
 });
 
 describe("query.whereNotIn()", () => {
   test("works with Payload", () => {
-    expect(
-      new Query({ from: "users" }).whereNotIn({ name: ["Alice", "Bob"] }).build(),
-    ).toBe("SELECT *\nFROM users\nWHERE name NOT IN ('Alice', 'Bob')");
+    const queryString = new Query({ from: "users" })
+      .whereNotIn({ name: ["Alice", "Bob"] })
+      .build();
+    expect("\n" + queryString).toBe(`
+SELECT *
+FROM users
+WHERE name NOT IN ('Alice', 'Bob')`);
   });
   test("works with field and values", () => {
-    expect(new Query({ from: "users" }).whereNotIn("id", [1, 2]).build()).toBe(
-      "SELECT *\nFROM users\nWHERE id NOT IN (1, 2)",
+    const queryString = new Query({ from: "users" }).whereNotIn("id", [1, 2]).build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM users
+WHERE id NOT IN (1, 2)`,
     );
   });
 });
 
 describe("query.whereNull()", () => {
   test("works with single field", () => {
-    expect(new Query({ from: "posts" }).whereNull("content").build()).toBe(
-      "SELECT *\nFROM posts\nWHERE content IS NULL",
+    const queryString = new Query({ from: "posts" }).whereNull("content").build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM posts
+WHERE content IS NULL`,
     );
   });
   test("works with array of fields", () => {
-    expect(
-      new Query({ from: "posts" }).whereNull(["created_at", "updated_at"]).build(),
-    ).toBe("SELECT *\nFROM posts\nWHERE created_at IS NULL\n  AND updated_at IS NULL");
+    const queryString = new Query({ from: "posts" })
+      .whereNull(["created_at", "updated_at"])
+      .build();
+    expect("\n" + queryString).toBe(`
+SELECT *
+FROM posts
+WHERE created_at IS NULL
+  AND updated_at IS NULL`);
   });
 });
 
 describe("query.whereNotNull()", () => {
   test("works with single field", () => {
-    expect(new Query({ from: "posts" }).whereNotNull("content").build()).toBe(
-      "SELECT *\nFROM posts\nWHERE content IS NOT NULL",
+    const queryString = new Query({ from: "posts" }).whereNotNull("content").build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM posts
+WHERE content IS NOT NULL`,
     );
   });
   test("works with array of fields", () => {
-    expect(
-      new Query({ from: "posts" }).whereNotNull(["created_at", "updated_at"]).build(),
-    ).toBe(
-      "SELECT *\nFROM posts\nWHERE created_at IS NOT NULL\n  AND updated_at IS NOT NULL",
+    const queryString = new Query({ from: "posts" })
+      .whereNotNull(["created_at", "updated_at"])
+      .build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM posts
+WHERE created_at IS NOT NULL
+  AND updated_at IS NOT NULL`,
     );
   });
 });
 
 describe("query.whereRaw()", () => {
   test("works with single clause", () => {
-    expect(
-      new Query({ from: "posts" })
-        .whereRaw("created_at > NOW() - INTERVAL '1 day'")
-        .build(),
-    ).toBe("SELECT *\nFROM posts\nWHERE created_at > NOW() - INTERVAL '1 day'");
+    const queryString = new Query({ from: "posts" })
+      .whereRaw("created_at > NOW() - INTERVAL '1 day'")
+      .build();
+    expect("\n" + queryString).toBe(`
+SELECT *
+FROM posts
+WHERE created_at > NOW() - INTERVAL '1 day'`);
   });
   test("works with array of clauses", () => {
-    expect(
-      new Query({ from: "posts" })
-        .whereRaw([
-          "created_at > NOW() - INTERVAL '1 day'",
-          "updated_at > NOW() - INTERVAL '1 day'",
-        ])
-        .build(),
-    ).toBe(
-      "SELECT *\nFROM posts\nWHERE created_at > NOW() - INTERVAL '1 day'\n  AND updated_at > NOW() - INTERVAL '1 day'",
+    const queryString = new Query({ from: "posts" })
+      .whereRaw([
+        "created_at > NOW() - INTERVAL '1 day'",
+        "updated_at > NOW() - INTERVAL '1 day'",
+      ])
+      .build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM posts
+WHERE created_at > NOW() - INTERVAL '1 day'
+  AND updated_at > NOW() - INTERVAL '1 day'`,
     );
   });
 });
 
 describe("query.groupBy()", () => {
   test("works with single field", () => {
-    expect(
-      new Query({ select: ["post_id", "count(*)"], from: "comments" })
-        .groupBy("post_id")
-        .build(),
-    ).toBe("SELECT post_id,\n  count(*)\nFROM comments\nGROUP BY post_id");
+    const queryString = new Query({ select: ["post_id", "count(*)"], from: "comments" })
+      .groupBy("post_id")
+      .build();
+    expect("\n" + queryString).toBe(`
+SELECT post_id,
+  count(*)
+FROM comments
+GROUP BY post_id`);
   });
   test("works with array of fields", () => {
-    expect(
-      new Query({ select: ["post_id", "user_id", "count(*)"], from: "comments" })
-        .groupBy(["post_id", "user_id"])
-        .build(),
-    ).toBe(
-      "SELECT post_id,\n  user_id,\n  count(*)\nFROM comments\nGROUP BY post_id,\n  user_id",
+    const queryString = new Query({
+      select: ["post_id", "user_id", "count(*)"],
+      from: "comments",
+    })
+      .groupBy(["post_id", "user_id"])
+      .build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT post_id,
+  user_id,
+  count(*)
+FROM comments
+GROUP BY post_id,
+  user_id`,
     );
   });
 });
 
 describe("query.having()", () => {
   test("works with single condition", () => {
-    expect(
-      new Query({ select: ["post_id", "count(*)"], from: "comments", groupBy: "post_id" })
-        .having("count(*) >= 10")
-        .build(),
-    ).toBe(
-      "SELECT post_id,\n  count(*)\nFROM comments\nGROUP BY post_id\nHAVING count(*) >= 10",
+    const queryString = new Query({
+      select: ["post_id", "count(*)"],
+      from: "comments",
+      groupBy: "post_id",
+    })
+      .having("count(*) >= 10")
+      .build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT post_id,
+  count(*)
+FROM comments
+GROUP BY post_id
+HAVING count(*) >= 10`,
     );
   });
   test("works with array of conditions", () => {
-    expect(
-      new Query({ select: ["post_id", "count(*)"], from: "comments", groupBy: "post_id" })
-        .having(["count(*) >= 10", "count(*) < 20"])
-        .build(),
-    ).toBe(
-      "SELECT post_id,\n  count(*)\nFROM comments\nGROUP BY post_id\nHAVING count(*) >= 10,\n  count(*) < 20",
+    const queryString = new Query({
+      select: ["post_id", "count(*)"],
+      from: "comments",
+      groupBy: "post_id",
+    })
+      .having(["count(*) >= 10", "count(*) < 20"])
+      .build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT post_id,
+  count(*)
+FROM comments
+GROUP BY post_id
+HAVING count(*) >= 10,
+  count(*) < 20`,
     );
   });
 });
 
 test("query.orderBy()", () => {
-  expect(new Query({ from: "users" }).orderBy("created_at", "desc").build()).toBe(
-    "SELECT *\nFROM users\nORDER BY created_at desc",
+  const queryString = new Query({ from: "users" }).orderBy("created_at", "desc").build();
+  expect("\n" + queryString).toBe(
+    `
+SELECT *
+FROM users
+ORDER BY created_at desc`,
   );
 });

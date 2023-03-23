@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.1.0](https://github.com/umatch-oficial/query/compare/v3.0.1...v3.1.0) (2023-03-23)
+
+
+### Features
+
+* change separator from "," to ", " when joining arrays in toSQLValue() ([64ef84e](https://github.com/umatch-oficial/query/commit/64ef84e7590194e1d5f7292d9c0c85b42b438c2e))
+
+
+### Bug Fixes
+
+* publish src directory ([4b4ddfd](https://github.com/umatch-oficial/query/commit/4b4ddfdbab0b365df006e5020b7d7df4a401ed0e))
+
 ## [3.0.1](https://github.com/umatch-oficial/query/compare/v3.0.0...v3.0.1) (2023-03-22)
 
 

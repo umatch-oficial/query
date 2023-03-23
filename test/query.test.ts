@@ -73,3 +73,85 @@ describe("query.where()", () => {
     );
   });
 });
+
+test("query.whereBetween()", () => {
+  expect(new Query({ from: "comments" }).whereBetween("upvotes", [0, 10]).build()).toBe(
+    "SELECT *\nFROM comments\nWHERE upvotes BETWEEN 0 AND 10",
+  );
+});
+
+describe("query.whereIn()", () => {
+  test("works with Payload", () => {
+    expect(new Query({ from: "users" }).whereIn({ name: ["Alice", "Bob"] }).build()).toBe(
+      "SELECT *\nFROM users\nWHERE name IN ('Alice', 'Bob')",
+    );
+  });
+  test("works with field and values", () => {
+    expect(new Query({ from: "users" }).whereIn("id", [1, 2]).build()).toBe(
+      "SELECT *\nFROM users\nWHERE id IN (1, 2)",
+    );
+  });
+});
+
+describe("query.whereNotIn()", () => {
+  test("works with Payload", () => {
+    expect(
+      new Query({ from: "users" }).whereNotIn({ name: ["Alice", "Bob"] }).build(),
+    ).toBe("SELECT *\nFROM users\nWHERE name NOT IN ('Alice', 'Bob')");
+  });
+  test("works with field and values", () => {
+    expect(new Query({ from: "users" }).whereNotIn("id", [1, 2]).build()).toBe(
+      "SELECT *\nFROM users\nWHERE id NOT IN (1, 2)",
+    );
+  });
+});
+
+describe("query.whereNull()", () => {
+  test("works with single field", () => {
+    expect(new Query({ from: "posts" }).whereNull("content").build()).toBe(
+      "SELECT *\nFROM posts\nWHERE content IS NULL",
+    );
+  });
+  test("works with array of fields", () => {
+    expect(
+      new Query({ from: "posts" }).whereNull(["created_at", "updated_at"]).build(),
+    ).toBe("SELECT *\nFROM posts\nWHERE created_at IS NULL\n  AND updated_at IS NULL");
+  });
+});
+
+describe("query.whereNotNull()", () => {
+  test("works with single field", () => {
+    expect(new Query({ from: "posts" }).whereNotNull("content").build()).toBe(
+      "SELECT *\nFROM posts\nWHERE content IS NOT NULL",
+    );
+  });
+  test("works with array of fields", () => {
+    expect(
+      new Query({ from: "posts" }).whereNotNull(["created_at", "updated_at"]).build(),
+    ).toBe(
+      "SELECT *\nFROM posts\nWHERE created_at IS NOT NULL\n  AND updated_at IS NOT NULL",
+    );
+  });
+});
+
+describe("query.whereRaw()", () => {
+  test("works with single clause", () => {
+    expect(
+      new Query({ from: "posts" })
+        .whereRaw("created_at > NOW() - INTERVAL '1 day'")
+        .build(),
+    ).toBe("SELECT *\nFROM posts\nWHERE created_at > NOW() - INTERVAL '1 day'");
+  });
+  test("works with array of clauses", () => {
+    expect(
+      new Query({ from: "posts" })
+        .whereRaw([
+          "created_at > NOW() - INTERVAL '1 day'",
+          "updated_at > NOW() - INTERVAL '1 day'",
+        ])
+        .build(),
+    ).toBe(
+      "SELECT *\nFROM posts\nWHERE created_at > NOW() - INTERVAL '1 day'\n  AND updated_at > NOW() - INTERVAL '1 day'",
+    );
+  });
+});

@@ -1,6 +1,7 @@
 import getOperator from "./getOperator";
-import { Primitive } from "./index";
 import toSQLValue from "./toSQLValue";
+
+import type { Primitive } from "./index";
 
 /**
  * Returns a function, that converts entries from Object.entries()

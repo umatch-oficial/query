@@ -113,7 +113,7 @@ export class Query<Result = unknown> {
    * Returns a string of the query to use inside another query.
    */
   private static _parseSubquery(query: Query): string {
-    return `(${query.build()}) AS ${query._alias}`;
+    return `(\n${query.build()}\n) AS ${query._alias}`;
   }
 
   public static getTableAndAlias = getTableAndAlias;

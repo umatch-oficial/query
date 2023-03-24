@@ -62,6 +62,163 @@ describe("Query class", () => {
   });
 });
 
+describe("query.from()", () => {
+  test("works with table", () => {
+    const queryString = new Query().from("users").build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM users`,
+    );
+  });
+  test("works with Query", () => {
+    const subQuery = new Query({
+      select: "CASE WHEN upvotes > downvotes THEN 1 ELSE 0 END as has_positive_karma",
+      from: "posts",
+    });
+    const queryString = new Query({
+      select: "sum(has_positive_karma)/count(*) as positive_karma_ratio",
+    })
+      .from(subQuery)
+      .build();
+    expect("\n" + queryString).toBe(
+      `
+SELECT sum(has_positive_karma)/count(*) as positive_karma_ratio
+FROM (
+SELECT CASE WHEN upvotes > downvotes THEN 1 ELSE 0 END as has_positive_karma
+FROM posts
+) AS sub`,
+    );
+  });
+});
+
+describe("alias methods", () => {
+  const expectedQueryString = `
+SELECT *
+FROM (
+SELECT *
+FROM users
+) AS q`;
+
+  test("query.as()", () => {
+    const subQuery = new Query({ from: "users" }).as("q");
+    const queryString = new Query({ from: subQuery }).build();
+    expect("\n" + queryString).toBe(expectedQueryString);
+  });
+  test("query.alias()", () => {
+    const subQuery = new Query({ from: "users" }).alias("q");
+    const queryString = new Query({ from: subQuery }).build();
+    expect("\n" + queryString).toBe(expectedQueryString);
+  });
+});
+
+describe("query.select()", () => {
+  test("works with single field", () => {
+    const queryString = new Query({ from: "comments" }).select("content").build();
+    expect("\n" + queryString).toBe(`
+SELECT content
+FROM comments`);
+  });
+  test("works with array of fields", () => {
+    const queryString = new Query({ from: "comments" }).select(["content", "id"]).build();
+    expect("\n" + queryString).toBe(`
+SELECT content,
+  id
+FROM comments`);
+  });
+});
+
+describe("join methods", () => {
+  const query = new Query({
+    select: ["users.id", "count(posts.*)"],
+    from: "users",
+  });
+  const expectedQueryString = (type: string) => `
+SELECT users.id,
+  count(posts.*)
+FROM users
+${type} JOIN posts AS p ON p.user_id = users.id`;
+
+  describe("query.innerJoin()", () => {
+    test("works with array of conditions", () => {
+      const queryString = query
+        .clone()
+        .innerJoin("posts as p", ["p.user_id = users.id"])
+        .build();
+      expect("\n" + queryString).toBe(expectedQueryString("INNER"));
+    });
+    test("works with Payload", () => {
+      const queryString = query
+        .clone()
+        .innerJoin("posts as p", { user_id: "users.id" })
+        .build();
+      expect("\n" + queryString).toBe(expectedQueryString("INNER"));
+    });
+  });
+
+  describe("query.leftJoin()", () => {
+    test("works with array of conditions", () => {
+      const queryString = query
+        .clone()
+        .leftJoin("posts as p", ["p.user_id = users.id"])
+        .build();
+      expect("\n" + queryString).toBe(expectedQueryString("LEFT"));
+    });
+    test("works with Payload", () => {
+      const queryString = query
+        .clone()
+        .leftJoin("posts as p", { user_id: "users.id" })
+        .build();
+      expect("\n" + queryString).toBe(expectedQueryString("LEFT"));
+    });
+  });
+
+  describe("query.outerJoin()", () => {
+    test("works with array of conditions", () => {
+      const queryString = query
+        .clone()
+        .outerJoin("posts as p", ["p.user_id = users.id"])
+        .build();
+      expect("\n" + queryString).toBe(expectedQueryString("OUTER"));
+    });
+    test("works with Payload", () => {
+      const queryString = query
+        .clone()
+        .outerJoin("posts as p", { user_id: "users.id" })
+        .build();
+      expect("\n" + queryString).toBe(expectedQueryString("OUTER"));
+    });
+  });
+
+  test("query.excludeJoin()", () => {
+    const queryString = new Query({ from: "users" })
+      .excludeJoin("posts", { user_id: "users.id" })
+      .build();
+    expect("\n" + queryString).toBe(`
+SELECT *
+FROM users
+LEFT JOIN posts AS exclude_posts ON exclude_posts.user_id = users.id
+WHERE exclude_posts.user_id IS NULL`);
+  });
+
+  describe("query.joinRaw()", () => {
+    test("works with single clause", () => {
+      const queryString = query
+        .clone()
+        .joinRaw("LEFT JOIN posts AS p ON p.user_id = users.id")
+        .build();
+      expect("\n" + queryString).toBe(expectedQueryString("LEFT"));
+    });
+    test("works with array of clauses", () => {
+      const queryString = query
+        .clone()
+        .joinRaw(["LEFT JOIN posts AS p ON p.user_id = users.id"])
+        .build();
+      expect("\n" + queryString).toBe(expectedQueryString("LEFT"));
+    });
+  });
+});
+
 describe("query.where()", () => {
   test("works with Payload", () => {
     const queryString = new Query({ from: "comments" })

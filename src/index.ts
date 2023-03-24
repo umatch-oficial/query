@@ -110,7 +110,7 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Returns a string of the query to use inside another query.
+   * Returns the query as a string to use inside another query.
    */
   private static _parseSubquery(query: Query): string {
     return `(\n${query.build()}\n) AS ${query._alias}`;
@@ -148,11 +148,11 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Adds the field to the 'select' clause.
+   * Adds a field to the 'select' clause.
    */
   public select(field: string): this;
   /**
-   * Adds the fields to the 'select' clause.
+   * Adds fields to the 'select' clause.
    */
   public select(fields: string[]): this;
   /**
@@ -291,7 +291,7 @@ export class Query<Result = unknown> {
    */
   public where(field: string, operator: Operator, value: Primitive): this;
   /**
-   * Adds a 'where' condition.
+   * Adds one or more 'where' conditions.
    *
    * If given a dictionary, iterates over entries, adding one condition per entry.<br>
    * If given a string and a value, transforms the value using [toSQLValue()]{@link toSQLValue}.<br>
@@ -352,7 +352,7 @@ export class Query<Result = unknown> {
    */
   public whereIn(field: string, values: Primitive[]): this;
   /**
-   * Adds a 'where in' condition.
+   * Adds one or more 'where in' conditions.
    *
    * If given a dictionary, iterates over entries, adding one condition per entry.<br>
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
@@ -386,7 +386,7 @@ export class Query<Result = unknown> {
    */
   public whereNotIn(field: string, values: Primitive[]): this;
   /**
-   * Adds a 'where not in' condition.
+   * Adds one or more 'where not in' conditions.
    *
    * If given a dictionary, iterates over entries, adding one condition per entry.<br>
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
@@ -416,7 +416,7 @@ export class Query<Result = unknown> {
    */
   public whereNull(fields: string[]): this;
   /**
-   * Adds 'where null' conditions.
+   * Adds one or more 'where null' conditions.
    */
   public whereNull(fields: OneOrArray<string>): this {
     toArray(fields).forEach((field) => this._wheres.push(`${field} IS NULL`));
@@ -432,7 +432,7 @@ export class Query<Result = unknown> {
    */
   public whereNotNull(fields: string[]): this;
   /**
-   * Adds 'where not null' conditions.
+   * Adds one or more 'where not null' conditions.
    */
   public whereNotNull(fields: OneOrArray<string>): this {
     toArray(fields).forEach((field) => this._wheres.push(`${field} IS NOT NULL`));
@@ -448,7 +448,7 @@ export class Query<Result = unknown> {
    */
   public whereRaw(clauses: string[]): this;
   /**
-   * Adds 'where' conditions without transforming values.
+   * Adds one or more 'where' conditions without transforming values.
    */
   public whereRaw(clauses: OneOrArray<string>): this {
     const wheres = toArray(clauses, entryToString(false));
@@ -465,7 +465,7 @@ export class Query<Result = unknown> {
    */
   public groupBy(fields: string[]): this;
   /**
-   * Adds columns to the 'group by' clause.
+   * Adds one or more columns to the 'group by' clause.
    */
   public groupBy(fields: OneOrArray<string>): this {
     toArray(fields).forEach((field) => this._groups.push(field));
@@ -481,7 +481,7 @@ export class Query<Result = unknown> {
    */
   public having(conditions: string[]): this;
   /**
-   * Adds conditions to the 'having' clause.
+   * Adds one or more conditions to the 'having' clause.
    */
   public having(conditions: OneOrArray<string>): this {
     toArray(conditions).forEach((condition) => this._havings.push(condition));

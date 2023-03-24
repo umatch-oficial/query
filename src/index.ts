@@ -36,6 +36,20 @@ export function isPrimitive(obj: unknown): obj is Primitive {
   return ["Date", "DateTime", "Moment"].includes(obj?.constructor.name!);
 }
 
+/**
+ * Joins an array of strings, filtering out empty ones.
+ */
+function joinStr(
+  strings: (string | number | undefined)[] | undefined,
+  separator = "",
+): string {
+  if (!strings?.length) return "";
+  return strings
+    .filter(Boolean)
+    .map((s) => String(s).trim())
+    .join(separator);
+}
+
 // Mapping from private property names to keys of Conditions
 const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
   _alias: "alias",
@@ -547,14 +561,13 @@ export class Query<Result = unknown> {
    * this._buildClauseString(['a = 1', 'b = 2'], 'WHERE', ' AND ')
    */
   private _buildClauseString(
-    conditions: OneOrArray<string | number> | undefined,
+    conditions: (string | number)[] | undefined,
     name: string,
     separator: string = ",\n  ",
   ): string {
-    if (isArray(conditions)) {
-      return conditions.length > 0 ? `${name} ${conditions.join(separator)}` : "";
-    }
-    return conditions ? `${name} ${conditions}` : "";
+    const joinedConditions = joinStr(conditions, separator);
+    if (!joinedConditions) return "";
+    return joinStr([name, joinedConditions], " ");
   }
 
   /**
@@ -566,19 +579,20 @@ export class Query<Result = unknown> {
       throw new Error("Cannot build query with 'having', but missing 'group by'");
     }
 
-    return [
-      `SELECT ${this._selects?.join(",\n  ") || "*"}`,
-      `FROM ${this._from}`,
-      this._buildClauseString(this._joins, "", "\n"),
-      this._buildClauseString(this._wheres, "WHERE", "\n  AND "),
-      this._buildClauseString(this._groups, "GROUP BY"),
-      this._buildClauseString(this._havings, "HAVING"),
-      this._buildClauseString(this._orders, "ORDER BY"),
-      this._buildClauseString(this._limit, "LIMIT"),
-      this._buildClauseString(this._offset, "OFFSET"),
-    ]
-      .filter((part) => !!part)
-      .join("\n");
+    return joinStr(
+      [
+        `SELECT ${this._selects?.join(",\n  ") || "*"}`,
+        `FROM ${this._from}`,
+        this._buildClauseString(this._joins, "", "\n"),
+        this._buildClauseString(this._wheres, "WHERE", "\n  AND "),
+        this._buildClauseString(this._groups, "GROUP BY"),
+        this._buildClauseString(this._havings, "HAVING"),
+        this._buildClauseString(this._orders, "ORDER BY"),
+        this._limit ? `LIMIT ${this._limit}` : "",
+        this._offset ? `OFFSET ${this._offset}` : "",
+      ],
+      "\n",
+    );
   }
 
   /**

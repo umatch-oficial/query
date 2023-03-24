@@ -160,7 +160,7 @@ export class Query<Result = unknown> {
    */
   public select(fields: OneOrArray<string>): this {
     const _fields = toArray(fields);
-    _fields.forEach((field) => this._selects.push(field), this);
+    _fields.forEach((field) => this._selects.push(field));
     return this;
   }
 
@@ -299,7 +299,7 @@ export class Query<Result = unknown> {
         if (!isJSObject(fieldOrConditions)) throw new Error("payload must be an object");
 
         const wheres = toArray(fieldOrConditions);
-        wheres.forEach((where) => this._wheres.push(where), this);
+        wheres.forEach((where) => this._wheres.push(where));
         return this;
       } else {
         // case 2
@@ -410,7 +410,7 @@ export class Query<Result = unknown> {
    * Adds 'where null' conditions.
    */
   public whereNull(fields: OneOrArray<string>): this {
-    toArray(fields).forEach((field) => this._wheres.push(`${field} IS NULL`), this);
+    toArray(fields).forEach((field) => this._wheres.push(`${field} IS NULL`));
     return this;
   }
 
@@ -426,7 +426,7 @@ export class Query<Result = unknown> {
    * Adds 'where not null' conditions.
    */
   public whereNotNull(fields: OneOrArray<string>): this {
-    toArray(fields).forEach((field) => this._wheres.push(`${field} IS NOT NULL`), this);
+    toArray(fields).forEach((field) => this._wheres.push(`${field} IS NOT NULL`));
     return this;
   }
 
@@ -443,7 +443,7 @@ export class Query<Result = unknown> {
    */
   public whereRaw(clauses: OneOrArray<string>): this {
     const wheres = toArray(clauses, entryToString(false));
-    wheres.forEach((where) => this._wheres.push(where), this);
+    wheres.forEach((where) => this._wheres.push(where));
     return this;
   }
 

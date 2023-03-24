@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.2.0](https://github.com/umatch-oficial/query/compare/v3.1.0...v3.2.0) (2023-03-24)
+
+
+### Features
+
+* allow joinRaw to receive an array ([33df833](https://github.com/umatch-oficial/query/commit/33df833c99a2c65916a2f9f308b3244fdc00989f))
+* **formatting:** add line breaks at the start and end of subqueries ([c73e7c9](https://github.com/umatch-oficial/query/commit/c73e7c96b25cb22fb0b001928807e08922e9488a))
+
+
+### Bug Fixes
+
+* remove white space before first join ([424a724](https://github.com/umatch-oficial/query/commit/424a7246a8cad2a2c840803eba054cc6a4a0a70c))
+
 ## [3.1.0](https://github.com/umatch-oficial/query/compare/v3.0.1...v3.1.0) (2023-03-23)
 
 

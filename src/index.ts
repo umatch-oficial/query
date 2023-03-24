@@ -258,8 +258,17 @@ export class Query<Result = unknown> {
   /**
    * Adds a join clause without parsing or transforming conditions.
    */
-  public joinRaw(clause: string): this {
-    this._joins.push(clause);
+  public joinRaw(clause: string): this;
+  /**
+   * Adds join clauses without parsing or transforming conditions.
+   */
+  public joinRaw(clauses: string[]): this;
+  /**
+   * Adds one or more join clauses without parsing or transforming conditions.
+   */
+  public joinRaw(clauses: OneOrArray<string>): this {
+    const joins = toArray(clauses);
+    joins.forEach((join) => this._joins.push(join));
     return this;
   }
 

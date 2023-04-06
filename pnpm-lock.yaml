@@ -39,6 +39,9 @@ devDependencies:
   eslint-config-prettier:
     specifier: ^8.8.0
     version: 8.8.0(eslint@8.36.0)
+  eslint-import-resolver-exports:
+    specifier: 1.0.0-beta.5
+    version: 1.0.0-beta.5(eslint-plugin-import@2.27.5)(eslint@8.36.0)
   eslint-import-resolver-typescript:
     specifier: ^3.5.1
     version: 3.5.3(eslint-plugin-import@2.27.5)(eslint@8.36.0)
@@ -2109,7 +2112,6 @@ packages:
       eslint: 8.36.0
       eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.56.0)(eslint-import-resolver-typescript@3.5.3)(eslint@8.36.0)
       resolve.exports: 2.0.1
-    dev: false
 
   /eslint-import-resolver-node@0.3.7:
     resolution: {integrity: sha512-gozW2blMLJCeFpBwugLTGyvVjNoeo1knonXAcatC6bjPBZitotxdWf7Gimr25N4c0AAOo4eOUfaG82IJPDpqCA==}

@@ -5,8 +5,8 @@ dependencies:
     specifier: ^1.1.0
     version: 1.1.0(@typescript-eslint/eslint-plugin@5.56.0)(@typescript-eslint/parser@5.56.0)(eslint-config-prettier@8.8.0)(eslint-import-resolver-exports@1.0.0-beta.5)(eslint-import-resolver-typescript@3.5.3)(eslint-plugin-import@2.27.5)(eslint-plugin-prettier@4.2.1)(eslint@8.36.0)(prettier@2.8.6)
   '@umatch/utils':
-    specifier: ^4.2.0
-    version: 4.2.0
+    specifier: ^6.0.0
+    version: 6.0.0
 
 devDependencies:
   '@types/jest':
@@ -1115,8 +1115,8 @@ packages:
       prettier: 2.8.6
     dev: false
 
-  /@umatch/utils@4.2.0:
-    resolution: {integrity: sha512-ki+teBPbEIlt27aepIKarqGETEwMSlnZFU5/3oNvD35H0SqWfssm49qvF2WUvKjHBd/dZjHyYu8ZmAHc4lNEYQ==}
+  /@umatch/utils@6.0.0:
+    resolution: {integrity: sha512-HxCT1E5vfpElQykBdsWEhlQmLJpaETNjoGFArmtH6mJkTMlft5VDKb15ZwdEfS43urwWXnaoap1lsLhC1FYk6w==}
     dependencies:
       bluebird: 3.7.2
       chalk: 4.1.2

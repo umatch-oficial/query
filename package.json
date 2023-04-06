@@ -57,6 +57,6 @@
     },
     "dependencies": {
         "@umatch/eslint-config": "^1.1.0",
-        "@umatch/utils": "^4.2.0"
+        "@umatch/utils": "^6.0.0"
     }
 }

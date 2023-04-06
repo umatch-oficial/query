@@ -612,7 +612,7 @@ export class Query<Result = unknown> {
   /**
    * Sets the method, that will be used to run queries.
    */
-  static init(func: () => Promise<unknown>): void {
+  static init(func: (query: string) => Promise<unknown>): void {
     this._run = func.bind(this);
   }
 

@@ -40,6 +40,7 @@
         "@types/node": "^18.11.15",
         "@typescript-eslint/eslint-plugin": "^5.56.0",
         "@typescript-eslint/parser": "^5.56.0",
+        "@umatch/eslint-config": "^1.1.0",
         "commit-and-tag-version": "^11.2.0",
         "commitizen": "^4.2.6",
         "cz-conventional-changelog": "^3.3.0",
@@ -57,7 +58,6 @@
         "typescript": "^4.9.4"
     },
     "dependencies": {
-        "@umatch/eslint-config": "^1.1.0",
         "@umatch/utils": "^6.0.0"
     }
 }

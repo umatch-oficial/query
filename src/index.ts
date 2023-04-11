@@ -52,9 +52,9 @@ function joinStr(
 
 // Mapping from private property names to keys of Conditions
 const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
-  _alias: "alias",
   _selects: "select",
   _from: "from",
+  _alias: "alias",
   _joins: "join",
   _wheres: "where",
   _groups: "groupBy",
@@ -66,9 +66,9 @@ const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
 };
 
 export class Query<Result = unknown> {
-  private _alias: string;
   private _selects: string[];
   private _from: string;
+  private _alias: string;
   private _joins: string[];
   private _wheres: string[];
   private _groups: string[];
@@ -80,9 +80,9 @@ export class Query<Result = unknown> {
 
   constructor(conditions?: Conditions) {
     const {
-      alias,
       select,
       from,
+      alias,
       join,
       where,
       groupBy,
@@ -92,13 +92,13 @@ export class Query<Result = unknown> {
       offset,
       trx,
     } = conditions ?? {};
-    this._alias = alias ?? "sub";
     this._selects = toArray(select);
     this._from = from
       ? typeof from === "string"
         ? from
         : Query._parseSubquery(from)
       : "";
+    this._alias = alias ?? "sub";
     this._joins = toArray(join);
     this._wheres = toArray(where);
     this._groups = toArray(groupBy);
@@ -129,22 +129,6 @@ export class Query<Result = unknown> {
    */
   public static raw(value: JSPrimitive): RawValue {
     return new RawValue(value);
-  }
-
-  /**
-   * Sets the alias that will be used in case this query becomes a subquery.
-   */
-  public as(alias: string): this {
-    this._alias = alias;
-    return this;
-  }
-
-  /**
-   * Sets the alias that will be used in case this query becomes a subquery.
-   */
-  public alias(alias: string): this {
-    this._alias = alias;
-    return this;
   }
 
   /**
@@ -184,6 +168,22 @@ export class Query<Result = unknown> {
   public from(from: string | Query): this {
     if (this._from) throw new Error("Query already has 'from'");
     this._from = typeof from === "string" ? from : Query._parseSubquery(from);
+    return this;
+  }
+
+  /**
+   * Sets the alias that will be used in case this query becomes a subquery.
+   */
+  public as(alias: string): this {
+    this._alias = alias;
+    return this;
+  }
+
+  /**
+   * Sets the alias that will be used in case this query becomes a subquery.
+   */
+  public alias(alias: string): this {
+    this._alias = alias;
     return this;
   }
 

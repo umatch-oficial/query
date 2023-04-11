@@ -66,6 +66,7 @@ const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
 };
 
 export class Query<Result = unknown> {
+  private _withs: string[];
   private _selects: string[];
   private _from: string;
   private _alias: string;
@@ -92,6 +93,7 @@ export class Query<Result = unknown> {
       offset,
       trx,
     } = conditions ?? {};
+    this._withs = [];
     this._selects = toArray(select);
     this._from = from
       ? typeof from === "string"
@@ -129,6 +131,16 @@ export class Query<Result = unknown> {
    */
   public static raw(value: JSPrimitive): RawValue {
     return new RawValue(value);
+  }
+
+  /**
+   * Adds a 'with' clause.
+   */
+  public with(query: string | Query, alias?: string): this {
+    this._withs.push(
+      isString(query) ? `(\n${query}\n) AS ${alias}` : Query._parseSubquery(query),
+    );
+    return this;
   }
 
   /**
@@ -590,6 +602,7 @@ export class Query<Result = unknown> {
 
     return joinStr(
       [
+        this._buildClauseString(this._withs, "WITH", ",\n"),
         `SELECT ${this._selects?.join(",\n  ") || "*"}`,
         `FROM ${this._from}`,
         this._buildClauseString(this._joins, "", "\n"),

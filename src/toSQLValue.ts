@@ -1,3 +1,5 @@
+import { isBoolean, isNumber, isString } from "@umatch/utils";
+
 import RawValue from "./RawValue";
 
 import type { DateTime } from "luxon";
@@ -20,9 +22,8 @@ import type { Moment } from "moment";
 export default function toSQLValue(x: unknown): string | boolean | number {
   if (x == null) return "";
 
-  if (typeof x === "boolean") return x;
-  if (typeof x === "number") return x;
-  if (typeof x === "string") return `'${x}'`;
+  if (isBoolean(x) || isNumber(x)) return x;
+  if (isString(x)) return `'${x}'`;
 
   switch (x.constructor?.name) {
     case "Array":

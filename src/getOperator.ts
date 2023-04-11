@@ -1,4 +1,6 @@
-import { Primitive } from "./index";
+import { isString } from "@umatch/utils";
+
+import type { Primitive } from "./index";
 
 export type Operator = ">=" | "<=" | "!=" | ">" | "<" | "=";
 
@@ -16,9 +18,7 @@ export type Operator = ">=" | "<=" | "!=" | ">" | "<" | "=";
  * @throws if splitting on operators yields more than 2 parts
  */
 export default function getOperator(value: Primitive): [Operator, Primitive] {
-  if (typeof value !== "string") {
-    return ["=", value];
-  }
+  if (!isString(value)) return ["=", value];
 
   const split = value.split(/\s*(>=|<=|!=|>|<|=)\s*/).filter(Boolean);
   switch (split.length) {

@@ -95,11 +95,7 @@ export class Query<Result = unknown> {
     } = conditions ?? {};
     this._withs = [];
     this._selects = toArray(select);
-    this._from = from
-      ? typeof from === "string"
-        ? from
-        : Query._parseSubquery(from)
-      : "";
+    this._from = from ? (isString(from) ? from : Query._parseSubquery(from)) : "";
     this._alias = alias ?? "sub";
     this._joins = toArray(join);
     this._wheres = toArray(where);
@@ -179,7 +175,7 @@ export class Query<Result = unknown> {
    */
   public from(from: string | Query): this {
     if (this._from) throw new Error("Query already has 'from'");
-    this._from = typeof from === "string" ? from : Query._parseSubquery(from);
+    this._from = isString(from) ? from : Query._parseSubquery(from);
     return this;
   }
 
@@ -212,7 +208,7 @@ export class Query<Result = unknown> {
     let tableAlias: string;
     let tableName: string;
     let joinTable: string;
-    if (typeof table === "string") {
+    if (isString(table)) {
       [tableName, tableAlias] = getTableAndAlias(table);
       joinTable = `${tableName} AS ${tableAlias}`;
     } else {
@@ -376,7 +372,7 @@ export class Query<Result = unknown> {
     if (values) {
       this._wheres.push(`${fieldOrConditions} IN ${toSQLValue(values)}`);
     } else {
-      if (typeof fieldOrConditions === "string") throw new Error("Missing values");
+      if (isString(fieldOrConditions)) throw new Error("Missing values");
       Object.entries(fieldOrConditions).forEach(
         ([field, vals]) => this.whereIn(field, vals),
         this,
@@ -410,7 +406,7 @@ export class Query<Result = unknown> {
     if (values) {
       this._wheres.push(`${fieldOrConditions} NOT IN ${toSQLValue(values)}`);
     } else {
-      if (typeof fieldOrConditions === "string") throw new Error("Missing values");
+      if (isString(fieldOrConditions)) throw new Error("Missing values");
       Object.entries(fieldOrConditions).forEach(
         ([field, vals]) => this.whereNotIn(field, vals),
         this,

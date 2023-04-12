@@ -1,5 +1,4 @@
 import { isArray, isJSObject, isString } from "@umatch/utils";
-import { apply, remove, rename } from "@umatch/utils/object";
 
 import entryToString from "./entryToString";
 import getTableAndAlias from "./getTableAndAlias";
@@ -16,9 +15,9 @@ export type JSPrimitive = boolean | number | string;
 export type Primitive = JSPrimitive | Date | DateTime | Moment;
 export type Payload = Dictionary<Primitive>;
 export type Conditions = {
-  alias?: string;
   select?: OneOrArray<string>;
   from?: string | Query;
+  alias?: string;
   join?: string[];
   where?: OneOrArray<string> | Payload;
   groupBy?: OneOrArray<string>;
@@ -29,9 +28,12 @@ export type Conditions = {
   trx?: any;
 };
 
+function isJSPrimitive(obj: unknown): obj is JSPrimitive {
+  return ["string", "boolean", "number"].includes(typeof obj);
+}
+
 export function isPrimitive(obj: unknown): obj is Primitive {
-  const isJSPrimitive = ["string", "boolean", "number"].includes(typeof obj);
-  if (isJSPrimitive) return true;
+  if (isJSPrimitive(obj)) return true;
 
   return ["Date", "DateTime", "Moment"].includes(obj?.constructor.name!);
 }
@@ -50,20 +52,13 @@ function joinStr(
     .join(separator);
 }
 
-// Mapping from private property names to keys of Conditions
-const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
-  _selects: "select",
-  _from: "from",
-  _alias: "alias",
-  _joins: "join",
-  _wheres: "where",
-  _groups: "groupBy",
-  _havings: "having",
-  _orders: "orderBy",
-  _limit: "limit",
-  _offset: "offset",
-  _trx: "trx",
-};
+function copy(value: unknown) {
+  if (!value) return value;
+  if (isArray(value)) return [...value];
+  if (isJSPrimitive(value)) return value;
+  throw new Error(`Cannot copy value of type ${typeof value}`);
+}
+
 const queryPropertyNamesAndDefaultValues = {
   with: ["_withs", []],
   select: ["_selects", []],
@@ -578,17 +573,13 @@ export class Query<Result = unknown> {
   /**
    * Returns a copy of the current query.
    */
-  public clone(exclude?: (keyof Conditions)[]): Query {
-    const copiedProperties = { ...this } as unknown as Dictionary;
-    // rename properties to match the constructor names
-    let conditionsObject = rename(copiedProperties, PROPERTY_TO_CONDITION);
+  public clone(exclude: QueryProperty[] = []): Query {
+    const newQuery = new Query();
+    // @ts-expect-error
+    Object.entries(this).forEach(([key, value]) => (newQuery[key] = copy(value)));
     // remove some properties
-    if (exclude) remove(conditionsObject, exclude);
-    // duplicate arrays, otherwise their references get passed along
-    conditionsObject = apply(conditionsObject, (value) => {
-      return isArray(value) ? [...value] : value;
-    });
-    return new Query(conditionsObject as Conditions);
+    newQuery.clear(exclude);
+    return newQuery;
   }
 
   /**

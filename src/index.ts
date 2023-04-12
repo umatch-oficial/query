@@ -64,6 +64,21 @@ const PROPERTY_TO_CONDITION: { [_: string]: keyof Conditions } = {
   _offset: "offset",
   _trx: "trx",
 };
+const queryPropertyNamesAndDefaultValues = {
+  with: ["_withs", []],
+  select: ["_selects", []],
+  from: ["_from", ""],
+  alias: ["_alias", ""],
+  join: ["_joins", []],
+  where: ["_wheres", []],
+  groupBy: ["_groups", []],
+  having: ["_havings", []],
+  orderBy: ["_orders", []],
+  limit: ["_limit", undefined],
+  offset: ["_offset", undefined],
+  trx: ["_trx", undefined],
+};
+type QueryProperty = keyof typeof queryPropertyNamesAndDefaultValues;
 
 export class Query<Result = unknown> {
   private _withs: string[];
@@ -545,6 +560,18 @@ export class Query<Result = unknown> {
       this.offset((page - 1) * pageSize);
     }
     this.limit(page * pageSize);
+    return this;
+  }
+
+  /**
+   * Clear properties from the query.
+   */
+  public clear(properties: OneOrArray<QueryProperty>): this {
+    toArray(properties).forEach((prop) => {
+      const [key, defaultValue] = queryPropertyNamesAndDefaultValues[prop];
+      // @ts-expect-error
+      this[key] = defaultValue;
+    });
     return this;
   }
 

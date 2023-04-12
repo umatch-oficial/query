@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.4.0](https://github.com/umatch-oficial/query/compare/v3.3.0...v3.4.0) (2023-04-12)
+
+
+### Features
+
+* add Query.clear() ([b99219a](https://github.com/umatch-oficial/query/commit/b99219a92a9483436416b5b457a5df8149fd568b))
+
+
+### Bug Fixes
+
+* refactor Query.clone() to copy all enumerable properties ([10de94e](https://github.com/umatch-oficial/query/commit/10de94e087ce232d19005bcfad0c9a2e68184847))
+
 ## [3.3.0](https://github.com/umatch-oficial/query/compare/v3.2.1...v3.3.0) (2023-04-11)
 
 

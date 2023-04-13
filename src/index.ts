@@ -63,7 +63,7 @@ const queryPropertyNamesAndDefaultValues = {
   with: ["_withs", []],
   select: ["_selects", []],
   from: ["_from", ""],
-  alias: ["_alias", ""],
+  alias: ["_alias", "sub"],
   join: ["_joins", []],
   where: ["_wheres", []],
   groupBy: ["_groups", []],
@@ -106,7 +106,7 @@ export class Query<Result = unknown> {
     this._withs = [];
     this._selects = toArray(select);
     this._from = from ? (isString(from) ? from : Query._parseSubquery(from)) : "";
-    this._alias = alias ?? "sub";
+    this._alias = alias ?? queryPropertyNamesAndDefaultValues["alias"][1];
     this._joins = toArray(join);
     this._wheres = toArray(where);
     this._groups = toArray(groupBy);
@@ -143,9 +143,16 @@ export class Query<Result = unknown> {
    * Adds a 'with' clause.
    */
   public with(query: string | Query, alias?: string): this {
-    this._withs.push(
-      isString(query) ? `(\n${query}\n) AS ${alias}` : Query._parseSubquery(query),
-    );
+    let _alias;
+    let _query;
+    if (isString(query)) {
+      _alias = alias ?? queryPropertyNamesAndDefaultValues["alias"][1];
+      _query = query;
+    } else {
+      _alias = query._alias;
+      _query = query.build();
+    }
+    this._withs.push(`${_alias} AS (\n${_query}\n)`);
     return this;
   }
 

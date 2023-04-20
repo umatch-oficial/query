@@ -572,7 +572,7 @@ export class Query<Result = unknown> {
     toArray(properties).forEach((prop) => {
       const [key, defaultValue] = queryPropertyNamesAndDefaultValues[prop];
       // @ts-expect-error
-      this[key] = defaultValue;
+      this[key] = copy(defaultValue);
     });
     return this;
   }

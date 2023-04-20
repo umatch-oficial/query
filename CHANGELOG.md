@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.4.2](https://github.com/umatch-oficial/query/compare/v3.4.1...v3.4.2) (2023-04-20)
+
+
+### Bug Fixes
+
+* Query.clear() mutated default values ([a823d5a](https://github.com/umatch-oficial/query/commit/a823d5ac7dfbd23fda83d3b21280d43033b0b1aa))
+
 ## [3.4.1](https://github.com/umatch-oficial/query/compare/v3.4.0...v3.4.1) (2023-04-13)
 
 

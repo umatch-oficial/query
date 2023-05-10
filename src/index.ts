@@ -28,6 +28,10 @@ export type Conditions = {
   trx?: any;
 };
 
+function isFunction(obj: unknown): obj is Function {
+  return typeof obj === "function";
+}
+
 function isJSPrimitive(obj: unknown): obj is JSPrimitive {
   return ["string", "boolean", "number"].includes(typeof obj);
 }
@@ -53,9 +57,8 @@ function joinStr(
 }
 
 function copy(value: unknown) {
-  if (!value) return value;
+  if (!value || isJSPrimitive(value) || isFunction(value)) return value;
   if (isArray(value)) return [...value];
-  if (isJSPrimitive(value)) return value;
   throw new Error(`Cannot copy value of type ${typeof value}`);
 }
 

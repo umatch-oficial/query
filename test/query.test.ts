@@ -51,6 +51,23 @@ describe("Query class", () => {
     expect(cloned._selects).toEqual(["id", "name"]);
   });
 
+  test("can initialized", async () => {
+    let queryString;
+    Query.init(async (query: string) => (queryString = query));
+    await new Query({ from: "users" }).run();
+    expect("\n" + queryString).toBe(
+      `
+SELECT *
+FROM users`,
+    );
+  });
+
+  test("throws an error if it hasn't been initialized", async () => {
+    // @ts-expect-error
+    Query.init(undefined);
+    await expect(() => new Query({ from: "users" }).run()).rejects.toThrow("Cannot run");
+  });
+
   test("throws an error if there is no 'from' clause", () => {
     expect(() => new Query().build()).toThrow("Cannot build");
   });

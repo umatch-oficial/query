@@ -115,6 +115,7 @@ export class Query<Result = unknown> {
     this._limit = limit;
     this._offset = offset;
     this._trx = trx;
+    this._run = Query._run?.bind(this);
   }
 
   /**
@@ -642,12 +643,13 @@ export class Query<Result = unknown> {
    * The method that is used to run queries.
    */
   static _run?: (query: string) => Promise<unknown>;
+  private _run?: (query: string) => Promise<unknown>;
 
   /**
    * Sets the method, that will be used to run queries.
    */
   static init(func: (query: string) => Promise<unknown>): void {
-    this._run = func.bind(this);
+    this._run = func;
   }
 
   /**
@@ -656,9 +658,9 @@ export class Query<Result = unknown> {
    * @throws if the 'init' method hasn't been called
    */
   async run(): Promise<Result[]> {
-    if (!Query._run) throw new Error("Cannot run without executing Query.init()");
+    if (!this._run) throw new Error("Cannot run without executing Query.init()");
 
     const query = this.build();
-    return (await Query._run(query)) as Promise<Result[]>;
+    return (await this._run(query)) as Promise<Result[]>;
   }
 }

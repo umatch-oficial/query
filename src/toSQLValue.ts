@@ -2,10 +2,10 @@ import { isBoolean, isNumber, isString } from "@umatch/utils";
 
 import RawValue from "./RawValue";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { Primitive } from "./index";
 import type { DateTime } from "luxon";
 import type { Moment } from "moment";
-
-/** @typedef {import { Primitive } from "./index"} Primitive */
 
 /**
  * Represents values as expected by Postgres.
@@ -17,7 +17,7 @@ import type { Moment } from "moment";
  * [string, number] => ('string', number)
  * Date => ISO date
  *
- * @throws if the value is not a [Primitive]{@link Primitive}
+ * @throws if the value is not a [Primitive]{@link Primitive} or [RawValue]{@link RawValue}
  */
 export default function toSQLValue(x: unknown): string | boolean | number {
   if (x == null) return "";

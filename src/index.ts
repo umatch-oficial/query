@@ -12,7 +12,7 @@ import type { DateTime } from "luxon";
 import type { Moment } from "moment";
 
 export type JSPrimitive = boolean | number | string;
-export type Primitive = JSPrimitive | Date | DateTime | Moment;
+export type Primitive = JSPrimitive | Date | DateTime | Moment | RawValue;
 export type Payload = Dictionary<Primitive>;
 export type Conditions = {
   select?: OneOrArray<string>;
@@ -39,7 +39,7 @@ function isJSPrimitive(obj: unknown): obj is JSPrimitive {
 export function isPrimitive(obj: unknown): obj is Primitive {
   if (isJSPrimitive(obj)) return true;
 
-  return ["Date", "DateTime", "Moment"].includes(obj?.constructor.name!);
+  return ["Date", "DateTime", "Moment", "RawValue"].includes(obj?.constructor.name!);
 }
 
 /**

@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@umatch/utils':
-    specifier: ^6.0.0
-    version: 6.0.0
+    specifier: ^6.2.0
+    version: 6.2.0
 
 devDependencies:
   '@types/jest':
@@ -428,8 +428,8 @@ packages:
     dev: true
     optional: true
 
-  /@commitlint/load@17.4.4:
-    resolution: {integrity: sha512-z6uFIQ7wfKX5FGBe1AkOF4l/ShOQsaa1ml/nLMkbW7R/xF8galGS7Zh0yHvzVp/srtfS0brC+0bUfQfmpMPFVQ==}
+  /@commitlint/load@17.5.0:
+    resolution: {integrity: sha512-l+4W8Sx4CD5rYFsrhHH8HP01/8jEP7kKf33Xlx2Uk2out/UKoKPYMOIRcDH5ppT8UXLMV+x6Wm5osdRKKgaD1Q==}
     engines: {node: '>=v14'}
     requiresBuild: true
     dependencies:
@@ -1140,8 +1140,8 @@ packages:
       prettier: 2.8.6
     dev: true
 
-  /@umatch/utils@6.0.0:
-    resolution: {integrity: sha512-HxCT1E5vfpElQykBdsWEhlQmLJpaETNjoGFArmtH6mJkTMlft5VDKb15ZwdEfS43urwWXnaoap1lsLhC1FYk6w==}
+  /@umatch/utils@6.2.0:
+    resolution: {integrity: sha512-d942oPJe0NIwtQRRYF1PdS0QgRqkyWz4Lse9e9FES4Ff2iJyKBu0j+aHbaMjTXreejrQglfQRi89reh288Xeeg==}
     dependencies:
       bluebird: 3.7.2
       chalk: 4.1.2
@@ -1893,7 +1893,7 @@ packages:
       longest: 2.0.1
       word-wrap: 1.2.3
     optionalDependencies:
-      '@commitlint/load': 17.4.4
+      '@commitlint/load': 17.5.0
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'

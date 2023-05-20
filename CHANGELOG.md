@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.5.0](https://github.com/umatch-oficial/query/compare/v3.4.4...v3.5.0) (2023-05-20)
+
+
+### Features
+
+* automatically convert comparisons with null to IS NULL ([bbbe25b](https://github.com/umatch-oficial/query/commit/bbbe25b94ac2e0ca68766c0141d4285875515434))
+
+
+### Bug Fixes
+
+* **types:** include RawValue in Primitive ([175837c](https://github.com/umatch-oficial/query/commit/175837c384ebc5a5842850dac1d8965b469b3f49))
+
 ## [3.4.4](https://github.com/umatch-oficial/query/compare/v3.4.3...v3.4.4) (2023-05-10)
 
 

@@ -12,7 +12,7 @@ import type { DateTime } from "luxon";
 import type { Moment } from "moment";
 
 export type JSPrimitive = boolean | number | string;
-export type Primitive = JSPrimitive | Date | DateTime | Moment | RawValue;
+export type Primitive = JSPrimitive | Date | DateTime | Moment | RawValue | null;
 export type Payload = Dictionary<Primitive>;
 export type Conditions = {
   select?: OneOrArray<string>;
@@ -37,6 +37,7 @@ function isJSPrimitive(obj: unknown): obj is JSPrimitive {
 }
 
 export function isPrimitive(obj: unknown): obj is Primitive {
+  if (obj === null) return true;
   if (isJSPrimitive(obj)) return true;
 
   return ["Date", "DateTime", "Moment", "RawValue"].includes(obj?.constructor.name!);
@@ -344,7 +345,11 @@ export class Query<Result = unknown> {
         if (!isString(fieldOrConditions)) throw new Error("field must be a string");
         if (!isPrimitive(valueOrOperator)) throw new Error("value must be a Primitive");
 
-        this._wheres.push(`${fieldOrConditions} = ${toSQLValue(valueOrOperator)}`);
+        const condition =
+          valueOrOperator === null
+            ? `${fieldOrConditions} IS NULL`
+            : `${fieldOrConditions} = ${toSQLValue(valueOrOperator)}`;
+        this._wheres.push(condition);
         return this;
       }
     }
@@ -353,6 +358,11 @@ export class Query<Result = unknown> {
     if (!isString(fieldOrConditions)) throw new Error("field must be a string");
     if (!isString(valueOrOperator)) throw new Error("operator must be a string");
     if (!isPrimitive(valueOrOperator)) throw new Error("value must be a Primitive");
+    if (value === null) {
+      throw new Error(
+        "Attempted comparison with null!\nThis is often an error. If it was intended, use whereRaw instead.",
+      );
+    }
 
     this._wheres.push(`${fieldOrConditions} ${valueOrOperator} ${toSQLValue(value)}`);
     return this;

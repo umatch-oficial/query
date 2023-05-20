@@ -506,3 +506,51 @@ ORDER BY created_at desc`,
     );
   });
 });
+
+describe("null value handling", () => {
+  describe("in join clauses", () => {
+    describe("in join methods", () => {
+      test("works with Payload", () => {
+        const queryString = new Query({ from: "users" })
+          .leftJoin("posts", { user_id: "users.id", content: null })
+          .build();
+        expect("\n" + queryString).toBe(`
+SELECT *
+FROM users
+LEFT JOIN posts AS p ON p.user_id = users.id AND p.content IS NULL`);
+      });
+    });
+  });
+  describe("in where clauses", () => {
+    const expectedQueryString = `
+SELECT *
+FROM posts
+WHERE content IS NULL`;
+
+    describe("in the constructor", () => {
+      test("works with Payload", () => {
+        const queryString = new Query({
+          from: "posts",
+          where: { content: null },
+        }).build();
+        expect("\n" + queryString).toBe(expectedQueryString);
+      });
+    });
+
+    describe("in where methods", () => {
+      test("works with field and value", () => {
+        const queryString = new Query({ from: "posts" }).where("content", null).build();
+        expect("\n" + queryString).toBe(expectedQueryString);
+      });
+      test("works with Payload", () => {
+        const queryString = new Query({ from: "posts" }).where({ content: null }).build();
+        expect("\n" + queryString).toBe(expectedQueryString);
+      });
+      test("throws an error if there is an operator and the value is null", () => {
+        expect(() => {
+          new Query({ from: "posts" }).where("content", "=", null);
+        }).toThrow("comparison with null");
+      });
+    });
+  });
+});

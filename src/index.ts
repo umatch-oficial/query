@@ -1,4 +1,6 @@
-import { isArray, isJSObject, isString } from "@umatch/utils";
+import { isJSObject, isPrimitive as isJSPrimitive, isString } from "@umatch/utils";
+import { joinNonEmpty } from "@umatch/utils/array";
+import { deepClone } from "@umatch/utils/object";
 
 import entryToString from "./entryToString";
 import getTableAndAlias from "./getTableAndAlias";
@@ -28,39 +30,11 @@ export type Conditions = {
   trx?: any;
 };
 
-function isFunction(obj: unknown): obj is Function {
-  return typeof obj === "function";
-}
-
-function isJSPrimitive(obj: unknown): obj is JSPrimitive {
-  return ["string", "boolean", "number"].includes(typeof obj);
-}
-
 export function isPrimitive(obj: unknown): obj is Primitive {
   if (obj === null) return true;
   if (isJSPrimitive(obj)) return true;
 
   return ["Date", "DateTime", "Moment", "RawValue"].includes(obj?.constructor.name!);
-}
-
-/**
- * Joins an array of strings, filtering out empty ones.
- */
-function joinStr(
-  strings: (string | number | undefined)[] | undefined,
-  separator = "",
-): string {
-  if (!strings?.length) return "";
-  return strings
-    .filter(Boolean)
-    .map((s) => String(s).trim())
-    .join(separator);
-}
-
-function copy(value: unknown) {
-  if (!value || isJSPrimitive(value) || isFunction(value)) return value;
-  if (isArray(value)) return [...value];
-  throw new Error(`Cannot copy value of type ${typeof value}`);
 }
 
 const queryPropertyNamesAndDefaultValues = {
@@ -586,7 +560,7 @@ export class Query<Result = unknown> {
     toArray(properties).forEach((prop) => {
       const [key, defaultValue] = queryPropertyNamesAndDefaultValues[prop];
       // @ts-expect-error
-      this[key] = copy(defaultValue);
+      this[key] = deepClone(defaultValue);
     });
     return this;
   }
@@ -597,7 +571,7 @@ export class Query<Result = unknown> {
   public clone(exclude: QueryProperty[] = []): Query {
     const newQuery = new Query();
     // @ts-expect-error
-    Object.entries(this).forEach(([key, value]) => (newQuery[key] = copy(value)));
+    Object.entries(this).forEach(([key, value]) => (newQuery[key] = deepClone(value)));
     // remove some properties
     newQuery.clear(exclude);
     return newQuery;
@@ -621,9 +595,9 @@ export class Query<Result = unknown> {
     name: string,
     separator: string = ",\n  ",
   ): string {
-    const joinedConditions = joinStr(conditions, separator);
+    const joinedConditions = joinNonEmpty(conditions, separator);
     if (!joinedConditions) return "";
-    return joinStr([name, joinedConditions], " ");
+    return joinNonEmpty([name, joinedConditions], " ");
   }
 
   /**
@@ -635,7 +609,7 @@ export class Query<Result = unknown> {
       throw new Error("Cannot build query with 'having', but missing 'group by'");
     }
 
-    return joinStr(
+    return joinNonEmpty(
       [
         this._buildClauseString(this._withs, "WITH", ",\n"),
         `SELECT ${this._selects?.join(",\n  ") || "*"}`,

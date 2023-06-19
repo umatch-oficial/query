@@ -29,6 +29,7 @@ export type Conditions = {
   offset?: number;
   trx?: any;
 };
+export { toSQLValue };
 
 export function isPrimitive(obj: unknown): obj is Primitive {
   if (obj === null) return true;

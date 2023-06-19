@@ -15,7 +15,7 @@ import type { Moment } from "moment";
  * boolean => boolean
  * number => number
  * [string, number] => ('string', number)
- * Date => ISO date
+ * Date => 'ISO date'
  *
  * @throws if the value is not a [Primitive]{@link Primitive} or [RawValue]{@link RawValue}
  */

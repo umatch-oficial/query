@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.6.1](https://github.com/umatch-oficial/query/compare/v3.6.0...v3.6.1) (2023-06-19)
+
+
+### Bug Fixes
+
+* use correct limit in Query.forPage() ([c02163b](https://github.com/umatch-oficial/query/commit/c02163b697167018e5a83dac392d93bc6bb253c0))
+
 ## [3.6.0](https://github.com/umatch-oficial/query/compare/v3.5.1...v3.6.0) (2023-06-19)
 
 

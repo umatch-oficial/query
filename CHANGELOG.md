@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.6.0](https://github.com/umatch-oficial/query/compare/v3.5.1...v3.6.0) (2023-06-19)
+
+
+### Features
+
+* export toSQLValue() ([297f9a2](https://github.com/umatch-oficial/query/commit/297f9a265bfad51cf4aa2b266ab046475e5331fc))
+
 ## [3.5.1](https://github.com/umatch-oficial/query/compare/v3.5.0...v3.5.1) (2023-06-12)
 
 ## [3.5.0](https://github.com/umatch-oficial/query/compare/v3.4.4...v3.5.0) (2023-05-20)

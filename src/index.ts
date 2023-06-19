@@ -550,7 +550,7 @@ export class Query<Result = unknown> {
     if (page > 1) {
       this.offset((page - 1) * pageSize);
     }
-    this.limit(page * pageSize);
+    this.limit(pageSize);
     return this;
   }
 

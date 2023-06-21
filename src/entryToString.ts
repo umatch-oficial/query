@@ -7,8 +7,8 @@ import type { Value } from "./index";
  * Returns a function, that converts entries from Object.entries()
  * to strings.
  *
- * If a table string is given, prefixes conditions with its alias
- * (present in the string or auto-generated).
+ * If an alias is given, properties are prefixed with it. Properties
+ * that already have an operator are not transformed.
  *
  * @param {boolean} [transform = true] Whether to transform values with toSQLValue(). Default: true
  * @param {string} [alias] An alias to prefix properties
@@ -21,6 +21,8 @@ export default function entryToString(
   return ([key, val]) => {
     const transformed = toSQLValue(val); // this ensures val is a Value
     const [operator, value] = getOperator(val as Value);
-    return `${prefix}${key} ${operator} ${transform ? transformed : value}`;
+    return `${prefix}${key} ${operator ?? "="} ${
+      transform && operator === null ? transformed : value
+    }`;
   };
 }

@@ -1,6 +1,6 @@
 import entryToString from "./entryToString";
 
-import type { Payload, Primitive } from "./index";
+import type { Payload, Value } from "./index";
 import type { Dictionary, OneOrArray } from "@umatch/utils";
 
 /**
@@ -13,7 +13,7 @@ import type { Dictionary, OneOrArray } from "@umatch/utils";
  * [string]   => [string]
  * { id: 1 }  => ['id = 1']
  */
-function toArray<T extends Payload | OneOrArray<Primitive>>(
+function toArray<T extends Payload | OneOrArray<Value>>(
   x?: T,
   entriesCallback?: (entry: [string, unknown]) => string,
 ): T extends null | undefined
@@ -24,7 +24,7 @@ function toArray<T extends Payload | OneOrArray<Primitive>>(
   ? T
   : T[];
 function toArray(
-  x?: Payload | OneOrArray<Primitive>,
+  x?: Payload | OneOrArray<Value>,
   entriesCallback: (entry: [string, unknown]) => string = entryToString(),
 ) {
   if (x == null) return [];

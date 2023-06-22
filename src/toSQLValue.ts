@@ -1,9 +1,15 @@
-import { isBoolean, isNumber, isNullOrUndefined, isString } from "@umatch/utils";
+import {
+  isBoolean,
+  isNullOrUndefined,
+  isNumber,
+  isString,
+  type Primitive as JSPrimitive,
+} from "@umatch/utils";
 
 import RawValue from "./RawValue";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { Primitive, JSPrimitive } from "./index";
+import type { Value } from "./index";
 import type { DateTime } from "luxon";
 import type { Moment } from "moment";
 
@@ -17,7 +23,7 @@ import type { Moment } from "moment";
  * [string, number] => ('string', number)
  * Date => 'ISO date'
  *
- * @throws if the value is not a [Primitive]{@link Primitive} or [RawValue]{@link RawValue}
+ * @throws if the value is not a [Value]{@link Value}
  */
 export default function toSQLValue(x: unknown): JSPrimitive {
   if (isNullOrUndefined(x)) return "";

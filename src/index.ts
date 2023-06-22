@@ -1,4 +1,11 @@
-import { isPlainObject, isPrimitive as isJSPrimitive, isString } from "@umatch/utils";
+import {
+  isPlainObject,
+  isPrimitive,
+  isString,
+  type Dictionary,
+  type OneOrArray,
+  type Primitive,
+} from "@umatch/utils";
 import { joinNonEmpty } from "@umatch/utils/array";
 import { deepClone } from "@umatch/utils/object";
 
@@ -9,13 +16,12 @@ import toArray from "./toArray";
 import toSQLValue from "./toSQLValue";
 
 import type { Operator } from "./getOperator";
-import type { Dictionary, OneOrArray } from "@umatch/utils";
 import type { DateTime } from "luxon";
 import type { Moment } from "moment";
 
-export type JSPrimitive = boolean | number | string;
-export type Primitive = JSPrimitive | Date | DateTime | Moment | RawValue | null;
-export type Payload = Dictionary<Primitive>;
+export type Value = Primitive | Date | DateTime | Moment | RawValue;
+export type Payload = Dictionary<Value>;
+export type JoinPayload = Dictionary<Primitive>;
 export type Conditions = {
   select?: OneOrArray<string>;
   from?: string | Query;
@@ -31,9 +37,9 @@ export type Conditions = {
 };
 export { toSQLValue };
 
-export function isPrimitive(obj: unknown): obj is Primitive {
+export function isValue(obj: unknown): obj is Value {
   if (obj === null) return true;
-  if (isJSPrimitive(obj)) return true;
+  if (isPrimitive(obj)) return true;
 
   return ["Date", "DateTime", "Moment", "RawValue"].includes(obj?.constructor.name!);
 }
@@ -115,7 +121,7 @@ export class Query<Result = unknown> {
    * @example
    * query.where("created_at", ">", Query.raw("NOW() - INTERVAL '1 day'"))
    */
-  public static raw(value: JSPrimitive): RawValue {
+  public static raw(value: Primitive): RawValue {
     return new RawValue(value);
   }
 
@@ -200,7 +206,7 @@ export class Query<Result = unknown> {
   private _join(
     joinType: "LEFT" | "INNER" | "OUTER",
     table: string | Query,
-    on: string[] | Payload,
+    on: string[] | JoinPayload,
   ): void {
     let tableAlias: string;
     let tableName: string;
@@ -223,7 +229,7 @@ export class Query<Result = unknown> {
    *
    * Parses arrays of conditions, but does not transform values.
    */
-  public innerJoin(table: string | Query, on: string[] | Payload): this {
+  public innerJoin(table: string | Query, on: string[] | JoinPayload): this {
     this._join("INNER", table, on);
     return this;
   }
@@ -233,7 +239,7 @@ export class Query<Result = unknown> {
    *
    * Parses arrays of conditions, but does not transform values.
    */
-  public leftJoin(table: string | Query, on: string[] | Payload): this {
+  public leftJoin(table: string | Query, on: string[] | JoinPayload): this {
     this._join("LEFT", table, on);
     return this;
   }
@@ -243,7 +249,7 @@ export class Query<Result = unknown> {
    *
    * Parses arrays of conditions, but does not transform values.
    */
-  public outerJoin(table: string | Query, on: string[] | Payload): this {
+  public outerJoin(table: string | Query, on: string[] | JoinPayload): this {
     this._join("OUTER", table, on);
     return this;
   }
@@ -251,7 +257,7 @@ export class Query<Result = unknown> {
   /**
    * Removes rows, which join on the conditions.
    */
-  public excludeJoin(table: string, conditions: Payload): this {
+  public excludeJoin(table: string, conditions: JoinPayload): this {
     const alias = `exclude_${table}`;
     // the column to exclude MUST be one of the joined columns, god knows why.
     const [excludeColumn] = Object.keys(conditions);
@@ -288,13 +294,13 @@ export class Query<Result = unknown> {
    *
    * Transforms the value using [toSQLValue()]{@link toSQLValue}.
    */
-  public where(field: string, value: Primitive): this;
+  public where(field: string, value: Value): this;
   /**
    * Adds a 'where' condition.
    *
    * Transforms the value using [toSQLValue()]{@link toSQLValue}.
    */
-  public where(field: string, operator: Operator, value: Primitive): this;
+  public where(field: string, operator: Operator, value: Value): this;
   /**
    * Adds one or more 'where' conditions.
    *
@@ -304,8 +310,8 @@ export class Query<Result = unknown> {
    */
   public where(
     fieldOrConditions: string | Payload,
-    valueOrOperator?: Primitive | Operator,
-    value?: Primitive,
+    valueOrOperator?: Value | Operator,
+    value?: Value,
   ): this {
     if (value === undefined) {
       if (valueOrOperator === undefined) {
@@ -318,7 +324,7 @@ export class Query<Result = unknown> {
       } else {
         // case 2
         if (!isString(fieldOrConditions)) throw new Error("field must be a string");
-        if (!isPrimitive(valueOrOperator)) throw new Error("value must be a Primitive");
+        if (!isValue(valueOrOperator)) throw new Error("value must be a Primitive");
 
         const condition =
           valueOrOperator === null
@@ -332,7 +338,7 @@ export class Query<Result = unknown> {
     // case 3
     if (!isString(fieldOrConditions)) throw new Error("field must be a string");
     if (!isString(valueOrOperator)) throw new Error("operator must be a string");
-    if (!isPrimitive(valueOrOperator)) throw new Error("value must be a Primitive");
+    if (!isValue(valueOrOperator)) throw new Error("value must be a Primitive");
     if (value === null) {
       throw new Error(
         "Attempted comparison with null!\nThis is often an error. If it was intended, use whereRaw instead.",
@@ -358,13 +364,13 @@ export class Query<Result = unknown> {
    *
    * Iterates over entries, adding one condition per entry.
    */
-  public whereIn(conditions: Dictionary<Primitive[]>): this;
+  public whereIn(conditions: Dictionary<Value[]>): this;
   /**
    * Adds a 'where in' condition.
    *
    * Transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
-  public whereIn(field: string, values: Primitive[]): this;
+  public whereIn(field: string, values: Value[]): this;
   /**
    * Adds one or more 'where in' conditions.
    *
@@ -372,8 +378,8 @@ export class Query<Result = unknown> {
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
   public whereIn(
-    fieldOrConditions: string | Dictionary<Primitive[]>,
-    values?: Primitive[],
+    fieldOrConditions: string | Dictionary<Value[]>,
+    values?: Value[],
   ): this {
     if (values) {
       this._wheres.push(`${fieldOrConditions} IN ${toSQLValue(values)}`);
@@ -392,13 +398,13 @@ export class Query<Result = unknown> {
    *
    * Iterates over entries, adding one condition per entry.
    */
-  public whereNotIn(condition: Dictionary<Primitive[]>): this;
+  public whereNotIn(condition: Dictionary<Value[]>): this;
   /**
    * Adds a 'where not in' condition.
    *
    * Transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
-  public whereNotIn(field: string, values: Primitive[]): this;
+  public whereNotIn(field: string, values: Value[]): this;
   /**
    * Adds one or more 'where not in' conditions.
    *
@@ -406,8 +412,8 @@ export class Query<Result = unknown> {
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
   public whereNotIn(
-    fieldOrConditions: string | Dictionary<Primitive[]>,
-    values?: Primitive[],
+    fieldOrConditions: string | Dictionary<Value[]>,
+    values?: Value[],
   ): this {
     if (values) {
       this._wheres.push(`${fieldOrConditions} NOT IN ${toSQLValue(values)}`);

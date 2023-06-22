@@ -1,7 +1,7 @@
 import getOperator from "./getOperator";
 import toSQLValue from "./toSQLValue";
 
-import type { Primitive } from "./index";
+import type { Value } from "./index";
 
 /**
  * Returns a function, that converts entries from Object.entries()
@@ -19,8 +19,8 @@ export default function entryToString(
 ): (entry: [string, unknown]) => string {
   const prefix = alias ? `${alias}.` : "";
   return ([key, val]) => {
-    const transformed = toSQLValue(val); // this ensures val is a Primitive
-    const [operator, value] = getOperator(val as Primitive);
+    const transformed = toSQLValue(val); // this ensures val is a Value
+    const [operator, value] = getOperator(val as Value);
     return `${prefix}${key} ${operator} ${transform ? transformed : value}`;
   };
 }

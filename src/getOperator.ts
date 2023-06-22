@@ -1,6 +1,6 @@
 import { isString } from "@umatch/utils";
 
-import type { Primitive } from "./index";
+import type { Value } from "./index";
 
 export type Operator = ">=" | "<=" | "!=" | ">" | "<" | "=" | "IS NULL";
 
@@ -17,7 +17,7 @@ export type Operator = ">=" | "<=" | "!=" | ">" | "<" | "=" | "IS NULL";
  * 'a > 3' => Error
  * @throws if splitting on operators yields more than 2 parts
  */
-export default function getOperator(value: Primitive): [Operator, Primitive] {
+export default function getOperator(value: Value): [Operator, Value] {
   if (value === null) return ["IS NULL", ""];
   if (!isString(value)) return ["=", value];
 
@@ -26,7 +26,7 @@ export default function getOperator(value: Primitive): [Operator, Primitive] {
     case 1:
       return ["=", split[0]];
     case 2:
-      return split as [Operator, Primitive];
+      return split as [Operator, Value];
     default:
       throw new Error(`Failed to get operator and value from expression '${value}'`);
   }

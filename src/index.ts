@@ -11,6 +11,7 @@ import { deepClone } from "@umatch/utils/object";
 
 import entryToString from "./entryToString";
 import getTableAndAlias from "./getTableAndAlias";
+import OrClass from "./Or";
 import RawValue from "./RawValue";
 import toArray from "./toArray";
 import toSQLValue from "./toSQLValue";
@@ -42,6 +43,10 @@ export function isValue(obj: unknown): obj is Value {
   if (isPrimitive(obj)) return true;
 
   return ["Date", "DateTime", "Moment", "RawValue"].includes(obj?.constructor.name!);
+}
+
+export function Or(conditions: (string | Payload)[]): OrClass {
+  return new OrClass(conditions);
 }
 
 const queryPropertyNamesAndDefaultValues = {
@@ -288,7 +293,7 @@ export class Query<Result = unknown> {
    *
    * Iterates over entries, adding one condition per entry.
    */
-  public where(conditions: Payload): this;
+  public where(conditions: Payload | OrClass): this;
   /**
    * Adds a 'where' condition.
    *
@@ -309,18 +314,23 @@ export class Query<Result = unknown> {
    * If given two strings and a value, uses the second string as the operator.
    */
   public where(
-    fieldOrConditions: string | Payload,
+    fieldOrConditions: string | Payload | OrClass,
     valueOrOperator?: Value | Operator,
     value?: Value,
   ): this {
     if (value === undefined) {
       if (valueOrOperator === undefined) {
         // case 1
-        if (!isPlainObject(fieldOrConditions)) throw new Error("payload must be an object");
-
-        const wheres = toArray(fieldOrConditions);
-        wheres.forEach((where) => this._wheres.push(where));
-        return this;
+        if (isPlainObject(fieldOrConditions)) {
+          const wheres = toArray(fieldOrConditions);
+          wheres.forEach((where) => this._wheres.push(where));
+          return this;
+        } else if (fieldOrConditions instanceof OrClass) {
+          this._wheres.push(fieldOrConditions.toString());
+          return this;
+        } else {
+          throw new Error("conditions must be a payload or an Or object");
+        }
       } else {
         // case 2
         if (!isString(fieldOrConditions)) throw new Error("field must be a string");

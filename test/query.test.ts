@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-import { Query } from "../src";
+import { Query, Or } from "../src";
 
 declare module "../src" {
   interface Query<Result = unknown> {
@@ -16,6 +16,7 @@ declare module "../src" {
   - created_at
   - updated_at
   - name
+  - deleted_at
  2. posts
   - id
   - created_at
@@ -73,6 +74,13 @@ FROM users`,
     expect(() => {
       new Query({ having: "" }).build();
     }).toThrow("Cannot build");
+  });
+});
+
+describe("Or class", () => {
+  test("works with Payloads and strings", () => {
+    const orString = Or([`content = ''`, { content: null, user_id: null }]).toString();
+    expect(orString).toBe(`(content = '' OR (content IS NULL AND user_id IS NULL))`);
   });
 });
 
@@ -237,6 +245,15 @@ WHERE exclude_posts.user_id IS NULL`);
 
 describe("where methods", () => {
   describe("query.where()", () => {
+    test("works with Or", () => {
+      const queryString = new Query({ from: "users" })
+        .where(Or(["deleted_at IS NULL", "deleted_at > NOW()"]))
+        .build();
+      expect("\n" + queryString).toBe(`
+SELECT *
+FROM users
+WHERE (deleted_at IS NULL OR deleted_at > NOW())`);
+    });
     test("works with Payload", () => {
       const queryString = new Query({ from: "comments" })
         .where({ post_id: 1, user_id: 1 })

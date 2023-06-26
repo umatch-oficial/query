@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.7.0](https://github.com/umatch-oficial/query/compare/v3.6.1...v3.7.0) (2023-06-26)
+
+
+### Features
+
+* add Or ([e078017](https://github.com/umatch-oficial/query/commit/e078017ff92af100a77c00fb284d424af64ba774))
+* allow Or in Query.where() ([a6b3d7b](https://github.com/umatch-oficial/query/commit/a6b3d7bb5ca5bd6199d8980cb06a6ead9375d1a1))
+* remove extra space after IS NULL and add error ([f306b2e](https://github.com/umatch-oficial/query/commit/f306b2eedb1c892b363c1ea2d9f9fa97a753b2c9))
+
+
+### Bug Fixes
+
+* **entry-to-string:** stop transforming the value when there already is an operator ([75b2a17](https://github.com/umatch-oficial/query/commit/75b2a17abb42816b446cc4ff18ff85fe92ef8630))
+
 ## [3.6.1](https://github.com/umatch-oficial/query/compare/v3.6.0...v3.6.1) (2023-06-19)
 
 

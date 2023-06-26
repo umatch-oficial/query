@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@umatch/utils':
-    specifier: ^8.2.1
-    version: 8.2.1
+    specifier: ^10.0.1
+    version: 10.0.1
 
 devDependencies:
   '@types/jest':
@@ -1149,8 +1149,8 @@ packages:
       prettier: 2.8.8
     dev: true
 
-  /@umatch/utils@8.2.1:
-    resolution: {integrity: sha512-Z0Kp3/iChRJcQZl27ir8Hm1I5cSB3I5IY8LDG17e/BefDNgEX1wAeCBGzZd0lAzR/yX8cctqMmWaBkEddENn/w==}
+  /@umatch/utils@10.0.1:
+    resolution: {integrity: sha512-Qx/DKtKJzlXyOCRCeuWyBP6aKALXvjiDZsB9mFha/dEwhtsGbLuMLjeylBdV6S5sBmzI9YAVEH9DwEL+0DPowg==}
     dependencies:
       bluebird: 3.7.2
       chalk: 4.1.2

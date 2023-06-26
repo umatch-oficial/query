@@ -1,4 +1,4 @@
-import { isJSObject, isPrimitive as isJSPrimitive, isString } from "@umatch/utils";
+import { isPlainObject, isPrimitive as isJSPrimitive, isString } from "@umatch/utils";
 import { joinNonEmpty } from "@umatch/utils/array";
 import { deepClone } from "@umatch/utils/object";
 
@@ -310,7 +310,7 @@ export class Query<Result = unknown> {
     if (value === undefined) {
       if (valueOrOperator === undefined) {
         // case 1
-        if (!isJSObject(fieldOrConditions)) throw new Error("payload must be an object");
+        if (!isPlainObject(fieldOrConditions)) throw new Error("payload must be an object");
 
         const wheres = toArray(fieldOrConditions);
         wheres.forEach((where) => this._wheres.push(where));

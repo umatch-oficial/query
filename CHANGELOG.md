@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.8.0](https://github.com/umatch-oficial/query/compare/v3.7.0...v3.8.0) (2023-06-27)
+
+
+### Features
+
+* allow Or in Query join methods ([99c68d7](https://github.com/umatch-oficial/query/commit/99c68d7a9d9647721b11348a2f9ae38b525084e5))
+
 ## [3.7.0](https://github.com/umatch-oficial/query/compare/v3.6.1...v3.7.0) (2023-06-26)
 
 

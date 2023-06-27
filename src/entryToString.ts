@@ -2,6 +2,7 @@ import { isPrimitive } from "@umatch/utils";
 import { joinNonEmpty } from "@umatch/utils/array";
 
 import getOperator from "./getOperator";
+import OrClass from "./Or";
 import toSQLValue from "./toSQLValue";
 
 import type { Value } from "./index";
@@ -24,6 +25,13 @@ export default function entryToString(
 ): (entry: [string, unknown]) => string {
   const prefix = alias ? `${alias}.` : "";
   return ([key, val]) => {
+    if (val instanceof OrClass) {
+      val.conditions = val.conditions.map((condition) =>
+        typeof condition === "string" ? `${prefix}${key} ${condition}` : condition,
+      );
+      return val.toString(alias);
+    }
+
     const transformed = toSQLValue(val); // this ensures val is a Value
     const [operator, value] = getOperator(val as Value);
     let finalValue;

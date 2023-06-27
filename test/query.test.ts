@@ -21,6 +21,7 @@ declare module "../src" {
   - id
   - created_at
   - updated_at
+  - closed_at
   - content
   - downvotes
   - upvotes
@@ -81,6 +82,27 @@ describe("Or class", () => {
   test("works with Payloads and strings", () => {
     const orString = Or([`content = ''`, { content: null, user_id: null }]).toString();
     expect(orString).toBe(`(content = '' OR (content IS NULL AND user_id IS NULL))`);
+  });
+  test("works in where clauses", () => {
+    const queryString = new Query({ from: "users" })
+      .where(Or(["deleted_at IS NULL", "deleted_at > NOW()"]))
+      .build();
+    expect("\n" + queryString).toBe(`
+SELECT *
+FROM users
+WHERE (deleted_at IS NULL OR deleted_at > NOW())`);
+  });
+  test("works in join clauses", () => {
+    const queryString = new Query({ from: "users" })
+      .leftJoin("posts", {
+        user_id: "users.id",
+        closed_at: Or(["IS NULL", "> NOW()"]),
+      })
+      .build();
+    expect("\n" + queryString).toBe(`
+SELECT *
+FROM users
+LEFT JOIN posts AS p ON p.user_id = users.id AND (p.closed_at IS NULL OR p.closed_at > NOW())`);
   });
 });
 
@@ -245,15 +267,6 @@ WHERE exclude_posts.user_id IS NULL`);
 
 describe("where methods", () => {
   describe("query.where()", () => {
-    test("works with Or", () => {
-      const queryString = new Query({ from: "users" })
-        .where(Or(["deleted_at IS NULL", "deleted_at > NOW()"]))
-        .build();
-      expect("\n" + queryString).toBe(`
-SELECT *
-FROM users
-WHERE (deleted_at IS NULL OR deleted_at > NOW())`);
-    });
     test("works with Payload", () => {
       const queryString = new Query({ from: "comments" })
         .where({ post_id: 1, user_id: 1 })

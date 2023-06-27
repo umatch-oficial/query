@@ -22,7 +22,7 @@ import type { Moment } from "moment";
 
 export type Value = Primitive | Date | DateTime | Moment | RawValue;
 export type Payload = Dictionary<Value>;
-export type JoinPayload = Dictionary<Primitive>;
+export type JoinPayload = Dictionary<Primitive | OrClass>;
 export type Conditions = {
   select?: OneOrArray<string>;
   from?: string | Query;

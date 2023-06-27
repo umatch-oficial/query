@@ -8,7 +8,7 @@ import type { Payload } from "./index";
 export default class Or {
   constructor(public conditions: (string | Payload)[]) {}
 
-  public toString(): string {
+  public toString(alias?: string): string {
     return (
       "(" +
       this.conditions
@@ -16,7 +16,7 @@ export default class Or {
           return typeof condition === "string"
             ? condition
             : "(" +
-                Object.entries(condition).map(entryToString(false)).join(" AND ") +
+                Object.entries(condition).map(entryToString(false, alias)).join(" AND ") +
                 ")";
         })
         .join(" OR ") +

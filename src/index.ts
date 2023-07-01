@@ -1,4 +1,6 @@
 import {
+  isArray,
+  isNullOrUndefined,
   isPlainObject,
   isPrimitive,
   isString,
@@ -15,6 +17,7 @@ import OrClass from "./Or";
 import RawValue from "./RawValue";
 import toArray from "./toArray";
 import toSQLValue from "./toSQLValue";
+import validateSQL from "./validateSQL";
 
 import type { Operator } from "./getOperator";
 import type { DateTime } from "luxon";
@@ -94,14 +97,20 @@ export class Query<Result = unknown> {
       trx,
     } = conditions ?? {};
     this._withs = [];
-    this._selects = toArray(select);
-    this._from = from ? (isString(from) ? from : Query._parseSubquery(from)) : "";
-    this._alias = alias ?? queryPropertyNamesAndDefaultValues["alias"][1];
-    this._joins = toArray(join);
-    this._wheres = toArray(where);
-    this._groups = toArray(groupBy);
-    this._havings = toArray(having);
-    this._orders = toArray(orderBy);
+    this._selects = toArray(select).map(validateSQL);
+    this._from = isNullOrUndefined(from)
+      ? queryPropertyNamesAndDefaultValues["from"][1]
+      : isString(from)
+      ? validateSQL(from)
+      : Query._parseSubquery(from);
+    this._alias = isNullOrUndefined(alias)
+      ? queryPropertyNamesAndDefaultValues["alias"][1]
+      : validateSQL(alias);
+    this._joins = toArray(join).map(validateSQL);
+    this._wheres = toArray(where).map(validateSQL);
+    this._groups = toArray(groupBy).map(validateSQL);
+    this._havings = toArray(having).map(validateSQL);
+    this._orders = toArray(orderBy).map(validateSQL);
     this._limit = limit;
     this._offset = offset;
     this._trx = trx;
@@ -122,6 +131,8 @@ export class Query<Result = unknown> {
    *
    * Use this method to produce raw SQL, which should not be pre-processed
    * by the query builder.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs.
    *
    * @example
    * query.where("created_at", ">", Query.raw("NOW() - INTERVAL '1 day'"))
@@ -160,7 +171,7 @@ export class Query<Result = unknown> {
    */
   public select(fields: OneOrArray<string>): this {
     const _fields = toArray(fields);
-    _fields.forEach((field) => this._selects.push(field));
+    _fields.forEach((field) => this._selects.push(validateSQL(field)));
     return this;
   }
 
@@ -183,15 +194,7 @@ export class Query<Result = unknown> {
    */
   public from(from: string | Query): this {
     if (this._from) throw new Error("Query already has 'from'");
-    this._from = isString(from) ? from : Query._parseSubquery(from);
-    return this;
-  }
-
-  /**
-   * Sets the alias that will be used in case this query becomes a subquery.
-   */
-  public as(alias: string): this {
-    this._alias = alias;
+    this._from = isString(from) ? validateSQL(from) : Query._parseSubquery(from);
     return this;
   }
 
@@ -199,8 +202,15 @@ export class Query<Result = unknown> {
    * Sets the alias that will be used in case this query becomes a subquery.
    */
   public alias(alias: string): this {
-    this._alias = alias;
+    this._alias = validateSQL(alias);
     return this;
+  }
+
+  /**
+   * Sets the alias that will be used in case this query becomes a subquery.
+   */
+  public as(alias: string): this {
+    return this.alias(alias);
   }
 
   /**
@@ -224,9 +234,15 @@ export class Query<Result = unknown> {
       joinTable = Query._parseSubquery(table);
     }
 
-    const ons = toArray(on, entryToString(false, tableAlias));
+    let ons: string[];
+    if (isArray(on)) {
+      ons = on.map(validateSQL);
+    } else {
+      ons = toArray(on, entryToString(false, tableAlias));
+    }
+
     const clause = `${joinType} JOIN ${joinTable} ON ${ons.join(" AND ")}`;
-    this.joinRaw(clause);
+    this._joins.push(clause);
   }
 
   /**
@@ -263,6 +279,8 @@ export class Query<Result = unknown> {
    * Removes rows, which join on the conditions.
    */
   public excludeJoin(table: string, conditions: JoinPayload): this {
+    validateSQL(table);
+
     const alias = `exclude_${table}`;
     // the column to exclude MUST be one of the joined columns, god knows why.
     const [excludeColumn] = Object.keys(conditions);
@@ -284,7 +302,7 @@ export class Query<Result = unknown> {
    */
   public joinRaw(clauses: OneOrArray<string>): this {
     const joins = toArray(clauses);
-    joins.forEach((join) => this._joins.push(join));
+    joins.forEach((join) => this._joins.push(validateSQL(join)));
     return this;
   }
 
@@ -335,6 +353,7 @@ export class Query<Result = unknown> {
         // case 2
         if (!isString(fieldOrConditions)) throw new Error("field must be a string");
         if (!isValue(valueOrOperator)) throw new Error("value must be a Primitive");
+        validateSQL(fieldOrConditions);
 
         const condition =
           valueOrOperator === null
@@ -354,6 +373,8 @@ export class Query<Result = unknown> {
         "Attempted comparison with null!\nThis is often an error. If it was intended, use whereRaw instead.",
       );
     }
+    validateSQL(fieldOrConditions);
+    validateSQL(valueOrOperator);
 
     this._wheres.push(`${fieldOrConditions} ${valueOrOperator} ${toSQLValue(value)}`);
     return this;
@@ -365,6 +386,7 @@ export class Query<Result = unknown> {
    * Transforms min and max using [toSQLValue()]{@link toSQLValue}.
    */
   public whereBetween(field: string, [min, max]: (number | DateTime)[]): this {
+    validateSQL(field);
     this._wheres.push(`${field} BETWEEN ${toSQLValue(min)} AND ${toSQLValue(max)}`);
     return this;
   }
@@ -392,6 +414,8 @@ export class Query<Result = unknown> {
     values?: Value[],
   ): this {
     if (values) {
+      if (!isString(fieldOrConditions)) throw new Error("field must be a string");
+      validateSQL(fieldOrConditions);
       this._wheres.push(`${fieldOrConditions} IN ${toSQLValue(values)}`);
     } else {
       if (isString(fieldOrConditions)) throw new Error("Missing values");
@@ -426,6 +450,8 @@ export class Query<Result = unknown> {
     values?: Value[],
   ): this {
     if (values) {
+      if (!isString(fieldOrConditions)) throw new Error("field must be a string");
+      validateSQL(fieldOrConditions);
       this._wheres.push(`${fieldOrConditions} NOT IN ${toSQLValue(values)}`);
     } else {
       if (isString(fieldOrConditions)) throw new Error("Missing values");
@@ -449,7 +475,9 @@ export class Query<Result = unknown> {
    * Adds one or more 'where null' conditions.
    */
   public whereNull(fields: OneOrArray<string>): this {
-    toArray(fields).forEach((field) => this._wheres.push(`${field} IS NULL`));
+    toArray(fields).forEach((field) =>
+      this._wheres.push(`${validateSQL(field)} IS NULL`),
+    );
     return this;
   }
 
@@ -465,7 +493,9 @@ export class Query<Result = unknown> {
    * Adds one or more 'where not null' conditions.
    */
   public whereNotNull(fields: OneOrArray<string>): this {
-    toArray(fields).forEach((field) => this._wheres.push(`${field} IS NOT NULL`));
+    toArray(fields).forEach((field) =>
+      this._wheres.push(`${validateSQL(field)} IS NOT NULL`),
+    );
     return this;
   }
 
@@ -481,8 +511,8 @@ export class Query<Result = unknown> {
    * Adds one or more 'where' conditions without transforming values.
    */
   public whereRaw(clauses: OneOrArray<string>): this {
-    const wheres = toArray(clauses, entryToString(false));
-    wheres.forEach((where) => this._wheres.push(where));
+    const wheres = toArray(clauses);
+    wheres.forEach((where) => this._wheres.push(validateSQL(where)));
     return this;
   }
 
@@ -498,7 +528,7 @@ export class Query<Result = unknown> {
    * Adds one or more columns to the 'group by' clause.
    */
   public groupBy(fields: OneOrArray<string>): this {
-    toArray(fields).forEach((field) => this._groups.push(field));
+    toArray(fields).forEach((field) => this._groups.push(validateSQL(field)));
     return this;
   }
 
@@ -514,7 +544,9 @@ export class Query<Result = unknown> {
    * Adds one or more conditions to the 'having' clause.
    */
   public having(conditions: OneOrArray<string>): this {
-    toArray(conditions).forEach((condition) => this._havings.push(condition));
+    toArray(conditions).forEach((condition) =>
+      this._havings.push(validateSQL(condition)),
+    );
     return this;
   }
 
@@ -522,6 +554,7 @@ export class Query<Result = unknown> {
    * Adds a column to the 'order by' clause.
    */
   public orderBy(column: string, order: "asc" | "desc"): this {
+    validateSQL(column);
     this._orders.push(order ? `${column} ${order}` : column);
     return this;
   }

@@ -26,7 +26,8 @@ WHERE exclude_posts.user_id IS NULL`
 
 ## TODO
 
-- Prevent SQL injections
+- Test SQL injection countermeasures
+- Add more SQL injection countermeasures
 - Add date methods (whereAfter, whereBefore, etc.)
 - Create and keep track of aliases for tables automatically
 

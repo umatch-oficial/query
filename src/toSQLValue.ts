@@ -3,10 +3,11 @@ import {
   isNullOrUndefined,
   isNumber,
   isString,
-  type Primitive as JSPrimitive,
+  type Primitive,
 } from "@umatch/utils";
 
 import RawValue from "./RawValue";
+import validateSQL from "./validateSQL";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Value } from "./index";
@@ -15,6 +16,8 @@ import type { Moment } from "moment";
 
 /**
  * Represents values as expected by Postgres.
+ *
+ * Validates strings using [validateSQL()]{@link import('./validateSQL').default}.
  *
  * @example
  * string => 'string'
@@ -25,10 +28,10 @@ import type { Moment } from "moment";
  *
  * @throws if the value is not a [Value]{@link Value}
  */
-export default function toSQLValue(x: unknown): JSPrimitive {
+export default function toSQLValue(x: unknown): Primitive {
   if (isNullOrUndefined(x)) return "";
   if (isBoolean(x) || isNumber(x)) return x;
-  if (isString(x)) return `'${x}'`;
+  if (isString(x) && validateSQL(x)) return `'${x}'`;
 
   switch (x?.constructor?.name) {
     case "Array":

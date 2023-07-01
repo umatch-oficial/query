@@ -23,6 +23,16 @@ function toArray<T extends Payload | JoinPayload | OneOrArray<Value>>(
   : T extends unknown[]
   ? T
   : T[];
+/**
+ * Converts conditions to arrays.
+ *
+ * If they are an object, also transforms the values using [toSQLValue()]{@link import('./toSQLValue').default}.
+ *
+ * @example
+ * string     => [string]
+ * [string]   => [string]
+ * { id: 1 }  => ['id = 1']
+ */
 function toArray(
   x?: Payload | JoinPayload | OneOrArray<Value>,
   entriesCallback: (entry: [string, unknown]) => string = entryToString(),

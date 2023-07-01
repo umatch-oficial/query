@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.9.0](https://github.com/umatch-oficial/query/compare/v3.8.0...v3.9.0) (2023-07-01)
+
+
+### Features
+
+* add validation against SQL injection ([5062657](https://github.com/umatch-oficial/query/commit/506265754f97097569ad52d4980940e416b86686))
+
 ## [3.8.0](https://github.com/umatch-oficial/query/compare/v3.7.0...v3.8.0) (2023-06-27)
 
 

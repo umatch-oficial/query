@@ -14,6 +14,7 @@ _Warning_: security against injections or attacks of any kind is not supported a
 
 - Full TypeScript support
 - Object syntax
+  - `where({ name: 'Bob' })` -> `WHERE name = 'Bob'`
   - `where({ content: null })` -> `WHERE content IS NULL`
   - `where({ created_at: new Date() })` -> `WHERE created_at > '2023-01-01T00:00:00.000Z'`
   - `where({ created_at: '> NOW()' })` -> `WHERE created_at > NOW()`
@@ -35,14 +36,15 @@ WHERE exclude_posts.user_id IS NULL`
 
 I wanted something simple, yet intuitive, and with a better developer experience than knex. Some shortcomings I wanted to address were:
 
-- using `null` and comparing dates in object syntax
+- comparing dates in object syntax
+- joining other queries
 - excluding rows intuitively (excludeJoin)
 
 ### You could've done it in XYZ way.
 
 I probably didn't know. This is a learning experience for me and a work in progress, constantly evolving.
 
-Tell me either way, I want to learn and improve. I'm also open to suggestions! Feel free to open an issue or PR.
+Tell me either way, I want to learn and improve! Feel free to open an issue or PR.
 
 ### Who asked these questions?
 

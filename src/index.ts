@@ -571,7 +571,7 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Clear properties from the query.
+   * Clears properties from the query.
    */
   public clear(properties: OneOrArray<QueryProperty>): this {
     toArray(properties).forEach((prop) => {

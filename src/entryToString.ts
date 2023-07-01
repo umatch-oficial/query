@@ -1,4 +1,5 @@
-import { isPrimitive } from "@umatch/utils";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { isPrimitive, type Primitive } from "@umatch/utils";
 import { joinNonEmpty } from "@umatch/utils/array";
 
 import getOperator from "./getOperator";
@@ -17,7 +18,9 @@ import type { Value } from "./index";
  * @param {boolean} [transform = true] Whether to transform values with toSQLValue(). Default: true
  * @param {string} [alias] An alias to prefix properties
  *
- * @throws if transform is false and the value isn't a Primitive
+ * @throws if any string value contains potential SQL injection vulnerabilities.
+ * @throws if any value isn't a [Value]{@link Value} or an [Or]{@link OrClass}.
+ * @throws if transform is false and any value isn't a [Primitive]{@link Primitive} or an [Or]{@link OrClass}.
  */
 export default function entryToString(
   transform: boolean = true,

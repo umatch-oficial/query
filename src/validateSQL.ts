@@ -29,13 +29,12 @@ const KEYWORDS = [
  */
 export default function validateSQL<S extends string>(string: S): S {
   const str = string.toLowerCase();
-  if (OTHER.some((other) => str.includes(other)))
-    throw new Error("Potential SQL injection vulnerability");
-  if (OPERATORS.some((operator) => str.includes(operator)))
-    throw new Error("Potential SQL injection vulnerability");
-  if (COMMENTS.some((comment) => str.includes(comment)))
-    throw new Error("Potential SQL injection vulnerability");
-  if (KEYWORDS.some((keyword) => keyword.test(str)))
+  if (
+    OTHER.some((other) => str.includes(other)) ||
+    OPERATORS.some((operator) => str.includes(operator)) ||
+    COMMENTS.some((comment) => str.includes(comment)) ||
+    KEYWORDS.some((keyword) => keyword.test(str))
+  )
     throw new Error("Potential SQL injection vulnerability");
   return string;
 }

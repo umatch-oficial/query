@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.9.2](https://github.com/umatch-oficial/query/compare/v3.9.1...v3.9.2) (2023-07-14)
+
+
+### Bug Fixes
+
+* remove SQL validation from whereRaw() and joinRaw() ([0c43bf7](https://github.com/umatch-oficial/query/commit/0c43bf74934d96aaa955c67ae78fe08fd3ef34ca))
+
 ## [3.9.1](https://github.com/umatch-oficial/query/compare/v3.9.0...v3.9.1) (2023-07-01)
 
 ## [3.9.0](https://github.com/umatch-oficial/query/compare/v3.8.0...v3.9.0) (2023-07-01)

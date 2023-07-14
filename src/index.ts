@@ -302,7 +302,7 @@ export class Query<Result = unknown> {
    */
   public joinRaw(clauses: OneOrArray<string>): this {
     const joins = toArray(clauses);
-    joins.forEach((join) => this._joins.push(validateSQL(join)));
+    joins.forEach((join) => this._joins.push(join));
     return this;
   }
 
@@ -512,7 +512,7 @@ export class Query<Result = unknown> {
    */
   public whereRaw(clauses: OneOrArray<string>): this {
     const wheres = toArray(clauses);
-    wheres.forEach((where) => this._wheres.push(validateSQL(where)));
+    wheres.forEach((where) => this._wheres.push(where));
     return this;
   }
 

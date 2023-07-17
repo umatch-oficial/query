@@ -560,6 +560,16 @@ export class Query<Result = unknown> {
   }
 
   /**
+   * Adds an 'order by' clause without validating the input.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs.
+   */
+  public orderByRaw(clause: string): this {
+    this._orders.push(clause);
+    return this;
+  }
+
+  /**
    * Sets the limit.
    *
    * @throws if the limit has already been set

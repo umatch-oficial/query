@@ -2,7 +2,7 @@
 
 Simple query builder for PostgreSQL. Inspired by knex.
 
-_Warning_: security against injections or attacks of any kind is not supported at this moment. Use at your own risk, and parse user input beforehand.
+_Warning_: security against injections or attacks of any kind is at an early stage of development. Use at your own risk, and parse user input beforehand.
 
 ## Table of contents
 

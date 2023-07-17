@@ -132,13 +132,22 @@ export class Query<Result = unknown> {
    * Use this method to produce raw SQL, which should not be pre-processed
    * by the query builder.
    *
-   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs.
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    *
    * @example
    * query.where("created_at", ">", Query.raw("NOW() - INTERVAL '1 day'"))
    */
   public static raw(value: Primitive): RawValue {
     return new RawValue(value);
+  }
+
+  /**
+   * Validates a string against SQL vulnerability exploits.
+   *
+   * @throws if the string contains any potential SQL vulnerability exploits.
+   */
+  public static validate(value: string): string {
+    return validateSQL(value);
   }
 
   /**
@@ -291,14 +300,20 @@ export class Query<Result = unknown> {
 
   /**
    * Adds a join clause without parsing or transforming conditions.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public joinRaw(clause: string): this;
   /**
    * Adds join clauses without parsing or transforming conditions.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public joinRaw(clauses: string[]): this;
   /**
    * Adds one or more join clauses without parsing or transforming conditions.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public joinRaw(clauses: OneOrArray<string>): this {
     const joins = toArray(clauses);
@@ -501,14 +516,20 @@ export class Query<Result = unknown> {
 
   /**
    * Adds a 'where' condition without transforming values.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public whereRaw(clause: string): this;
   /**
    * Adds 'where' conditions without transforming values.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public whereRaw(clauses: string[]): this;
   /**
    * Adds one or more 'where' conditions without transforming values.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public whereRaw(clauses: OneOrArray<string>): this {
     const wheres = toArray(clauses);
@@ -562,7 +583,7 @@ export class Query<Result = unknown> {
   /**
    * Adds an 'order by' clause without validating the input.
    *
-   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs.
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public orderByRaw(clause: string): this {
     this._orders.push(clause);

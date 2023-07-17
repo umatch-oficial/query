@@ -169,18 +169,24 @@ export class Query<Result = unknown> {
 
   /**
    * Adds a field to the 'select' clause.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public select(field: string): this;
   /**
    * Adds fields to the 'select' clause.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public select(fields: string[]): this;
   /**
    * Adds one or more fields to the 'select' clause.
+   *
+   * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
   public select(fields: OneOrArray<string>): this {
     const _fields = toArray(fields);
-    _fields.forEach((field) => this._selects.push(validateSQL(field)));
+    _fields.forEach((field) => this._selects.push(field));
     return this;
   }
 

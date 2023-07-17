@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.11.0](https://github.com/umatch-oficial/query/compare/v3.10.0...v3.11.0) (2023-07-17)
+
+
+### Features
+
+* add Query.validate() ([b5530d7](https://github.com/umatch-oficial/query/commit/b5530d7371973edea4f12333130bca6541e32f3f))
+
+
+### Bug Fixes
+
+* remove SQL validation from Query.select() ([371ae01](https://github.com/umatch-oficial/query/commit/371ae010334cf6c0a3e427df90066363a672c1c2))
+
 ## [3.10.0](https://github.com/umatch-oficial/query/compare/v3.9.2...v3.10.0) (2023-07-17)
 
 

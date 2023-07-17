@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.11.1](https://github.com/umatch-oficial/query/compare/v3.11.0...v3.11.1) (2023-07-17)
+
+
+### Bug Fixes
+
+* **validate-sql:** stop checking for || or + ([1a42379](https://github.com/umatch-oficial/query/commit/1a42379453850a2ea414f696bf9a6a2ef2a590d6))
+
 ## [3.11.0](https://github.com/umatch-oficial/query/compare/v3.10.0...v3.11.0) (2023-07-17)
 
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.10.0](https://github.com/umatch-oficial/query/compare/v3.9.2...v3.10.0) (2023-07-17)
+
+
+### Features
+
+* add Query.orderByRaw() ([c4da439](https://github.com/umatch-oficial/query/commit/c4da4393a541baf93a59a4c4bfaeb372c44bbf79))
+
 ## [3.9.2](https://github.com/umatch-oficial/query/compare/v3.9.1...v3.9.2) (2023-07-14)
 
 

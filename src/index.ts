@@ -142,6 +142,16 @@ export class Query<Result = unknown> {
   public static getTableAndAlias = getTableAndAlias;
 
   /**
+   * Returns an object used to represent OR conditions.
+   *
+   * @example
+   * query.where(Query.or(["expiration IS NULL", "expiration > NOW()"]))
+   */
+  public static or(conditions: (string | Payload)[]): OrClass {
+    return new OrClass(conditions);
+  }
+
+  /**
    * Wraps a value so that it doesn't get transformed.
    *
    * Use this method to produce raw SQL, which should not be pre-processed

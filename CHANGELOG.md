@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.12.0](https://github.com/umatch-oficial/query/compare/v3.11.1...v3.12.0) (2023-08-08)
+
+
+### Features
+
+* add Query.or() ([083214d](https://github.com/umatch-oficial/query/commit/083214d32f709415f14af07bee9e7bb317323f6f))
+* export Raw() ([a64030b](https://github.com/umatch-oficial/query/commit/a64030b075d788ae0bd33272969ddc3d62b4ed8c))
+
 ## [3.11.1](https://github.com/umatch-oficial/query/compare/v3.11.0...v3.11.1) (2023-07-17)
 
 

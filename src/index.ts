@@ -52,6 +52,21 @@ export function Or(conditions: (string | Payload)[]): OrClass {
   return new OrClass(conditions);
 }
 
+/**
+ * Wraps a value so that it doesn't get transformed.
+ *
+ * Use this method to produce raw SQL, which should not be pre-processed
+ * by the query builder.
+ *
+ * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
+ *
+ * @example
+ * query.where("created_at", ">", Raw("NOW() - INTERVAL '1 day'"))
+ */
+export function Raw(value: Primitive): RawValue {
+  return new RawValue(value);
+}
+
 const queryPropertyNamesAndDefaultValues = {
   with: ["_withs", []],
   select: ["_selects", []],

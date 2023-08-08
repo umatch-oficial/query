@@ -25,7 +25,7 @@ const KEYWORDS = [
 /**
  * Returns the string.
  *
- * @throws if the string contains any potential SQL vulnerability exploits.
+ * @throws {Error} if the string contains any potential SQL vulnerability exploits.
  */
 export default function validateSQL<S extends string>(string: S): S {
   const str = string.toLowerCase();

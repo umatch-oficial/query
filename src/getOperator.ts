@@ -13,7 +13,7 @@ export type Operator = ">=" | "<=" | "!=" | ">" | "<" | "=" | "IS NULL";
  * '3'     => [null, '3']
  * '>3'    => ['>', '3']
  * 'a > 3' => Error
- * @throws if splitting on operators yields more than 2 parts
+ * @throws {Error} if splitting on operators yields more than 2 parts
  */
 export default function getOperator(value: Value): [Operator | null, Value] {
   if (value === null) return ["IS NULL", ""];

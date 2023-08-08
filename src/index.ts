@@ -169,7 +169,7 @@ export class Query<Result = unknown> {
   /**
    * Validates a string against SQL vulnerability exploits.
    *
-   * @throws if the string contains any potential SQL vulnerability exploits.
+   * @throws {Error} if the string contains any potential SQL vulnerability exploits.
    */
   public static validate(value: string): string {
     return validateSQL(value);
@@ -218,19 +218,19 @@ export class Query<Result = unknown> {
   /**
    * Sets the 'from' table.
    *
-   * @throws if the table has already been set
+   * @throws {Error} if the table has already been set
    */
   public from(table: string): this;
   /**
    * Sets the 'from' table.
    *
-   * @throws if the table has already been set
+   * @throws {Error} if the table has already been set
    */
   public from(query: Query): this;
   /**
    * Sets the 'from' table.
    *
-   * @throws if the table has already been set
+   * @throws {Error} if the table has already been set
    */
   public from(from: string | Query): this {
     if (this._from) throw new Error("Query already has 'from'");
@@ -624,7 +624,7 @@ export class Query<Result = unknown> {
   /**
    * Sets the limit.
    *
-   * @throws if the limit has already been set
+   * @throws {Error} if the limit has already been set
    */
   public limit(value: number): this {
     if (this._limit) throw new Error("Query already has limit");
@@ -635,7 +635,7 @@ export class Query<Result = unknown> {
   /**
    * Sets the offset.
    *
-   * @throws if the offset has already been set
+   * @throws {Error} if the offset has already been set
    */
   public offset(value: number): this {
     if (this._offset) throw new Error("Query already has offset");
@@ -646,7 +646,7 @@ export class Query<Result = unknown> {
   /**
    * Sets the transaction.
    *
-   * @throws if the transaction has already been set
+   * @throws {Error} if the transaction has already been set
    */
   public trx(trx: any): this {
     if (this._trx) throw new Error("Query already has transaction");
@@ -754,7 +754,7 @@ export class Query<Result = unknown> {
   /**
    * Builds and runs the query, returning the result.
    *
-   * @throws if the 'init' method hasn't been called
+   * @throws {Error} if the 'init' method hasn't been called
    */
   async run(): Promise<Result[]> {
     if (!this._run) throw new Error("Cannot run without executing Query.init()");

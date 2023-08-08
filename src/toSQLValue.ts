@@ -26,7 +26,7 @@ import type { Moment } from "moment";
  * [string, number] => ('string', number)
  * Date => 'ISO date'
  *
- * @throws if the value is not a [Value]{@link Value}
+ * @throws {Error} if the value is not a [Value]{@link Value}
  */
 export default function toSQLValue(x: unknown): Primitive {
   if (isNullOrUndefined(x)) return "";

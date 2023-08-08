@@ -11,6 +11,7 @@ import {
 import { joinNonEmpty } from "@umatch/utils/array";
 import { deepClone } from "@umatch/utils/object";
 
+import AndClass from "./And";
 import entryToString from "./entryToString";
 import getTableAndAlias from "./getTableAndAlias";
 import OrClass from "./Or";
@@ -48,7 +49,28 @@ export function isValue(obj: unknown): obj is Value {
   return ["Date", "DateTime", "Moment", "RawValue"].includes(obj?.constructor.name!);
 }
 
-export function Or(conditions: (string | Payload)[]): OrClass {
+/**
+ * Returns an object used to represent AND conditions.
+ *
+ * @example
+ * query.where(Or(["expiration IS NULL", And(["expiration > NOW()", "created_at > NOW() - INTERVAL '1 day'"])]))
+ */
+export function And(conditions: (string | Payload | OrClass)[]): AndClass {
+  return new AndClass(conditions);
+}
+
+/**
+ * Returns an object used to represent OR conditions.
+ *
+ * PS: conditions are validated against SQL injection attacks. This
+ * means that you cannot pass conditions including the 'AND' keyword.
+ * To pass conditions including 'AND', use [And]{@link And}. Alternatively,
+ * you can use [Raw]{@link Raw} to pass raw SQL.
+ *
+ * @example
+ * query.where(Or(["expiration IS NULL", "expiration > NOW()"]))
+ */
+export function Or(conditions: (string | Payload | AndClass)[]): OrClass {
   return new OrClass(conditions);
 }
 
@@ -142,13 +164,28 @@ export class Query<Result = unknown> {
   public static getTableAndAlias = getTableAndAlias;
 
   /**
+   * Returns an object used to represent AND conditions.
+   *
+   * @example
+   * query.where(Query.or(["expiration IS NULL", Query.and(["expiration > NOW()", "created_at > NOW() - INTERVAL '1 day'"])]))
+   */
+  public static and(conditions: (string | Payload | OrClass)[]): AndClass {
+    return And(conditions);
+  }
+
+  /**
    * Returns an object used to represent OR conditions.
+   *
+   * PS: conditions are validated against SQL injection attacks. This
+   * means that you cannot pass conditions including the 'AND' keyword.
+   * To pass conditions including 'AND', use [Query.and]{@link Query.and}.
+   * Alternatively, you can use [Query.raw]{@link Query.raw} to pass raw SQL.
    *
    * @example
    * query.where(Query.or(["expiration IS NULL", "expiration > NOW()"]))
    */
-  public static or(conditions: (string | Payload)[]): OrClass {
-    return new OrClass(conditions);
+  public static or(conditions: (string | Payload | AndClass)[]): OrClass {
+    return Or(conditions);
   }
 
   /**
@@ -163,7 +200,7 @@ export class Query<Result = unknown> {
    * query.where("created_at", ">", Query.raw("NOW() - INTERVAL '1 day'"))
    */
   public static raw(value: Primitive): RawValue {
-    return new RawValue(value);
+    return Raw(value);
   }
 
   /**

@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-import { Query, Or } from "../src";
+import { And, Query, Or } from "../src";
 
 declare module "../src" {
   interface Query<Result = unknown> {
@@ -103,6 +103,16 @@ WHERE (deleted_at IS NULL OR deleted_at > NOW())`);
 SELECT *
 FROM users
 LEFT JOIN posts AS p ON p.user_id = users.id AND (p.closed_at IS NULL OR p.closed_at > NOW())`);
+  });
+});
+
+describe("And class", () => {
+  test("works inside Or", () => {
+    const orString = Or([
+      `content = ''`,
+      And(["content IS NULL", "user_id IS NULL"]),
+    ]).toString();
+    expect(orString).toBe(`(content = '' OR (content IS NULL AND user_id IS NULL))`);
   });
 });
 

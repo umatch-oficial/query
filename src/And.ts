@@ -1,17 +1,17 @@
-import And from "./And";
 import entryToString from "./entryToString";
+import Or from "./Or";
 import validateSQL from "./validateSQL";
 
 import type { Payload } from "./index";
 
 /**
- * Class used to represent OR conditions.
+ * Class used to represent AND conditions.
  */
-export default class Or {
-  constructor(public conditions: (string | Payload | And)[]) {}
+export default class And {
+  constructor(public conditions: (string | Payload | Or)[]) {}
 
   /**
-   * Returns the string representation of the OR conditions.
+   * Returns the string representation of the AND conditions.
    *
    * Validates strings using [validateSQL()]{@link import('./validateSQL').default}.
    */
@@ -22,13 +22,13 @@ export default class Or {
         .map((condition) => {
           return typeof condition === "string"
             ? validateSQL(condition)
-            : condition instanceof And
+            : condition instanceof Or
             ? condition.toString(alias)
             : "(" +
               Object.entries(condition).map(entryToString(false, alias)).join(" AND ") +
               ")";
         })
-        .join(" OR ") +
+        .join(" AND ") +
       ")"
     );
   }

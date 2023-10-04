@@ -16,7 +16,7 @@ _Warning_: security against injections or attacks of any kind is at an early sta
 - Object syntax
   - `where({ name: 'Bob' })` -> `WHERE name = 'Bob'`
   - `where({ content: null })` -> `WHERE content IS NULL`
-  - `where({ created_at: new Date() })` -> `WHERE created_at > '2023-01-01T00:00:00.000Z'`
+  - `where({ created_at: new Date() })` -> `WHERE created_at = '2023-01-01T00:00:00.000Z'`
   - `where({ created_at: '> NOW()' })` -> `WHERE created_at > NOW()`
 - Automatic aliasing of joined tables
   - `leftJoin('users', { id: 'posts.user.id' })` -> `LEFT JOIN users AS u ON u.id = posts.user_id`
@@ -49,4 +49,4 @@ Tell me either way, I want to learn and improve! Feel free to open an issue or P
 
 ### Who asked these questions?
 
-I actually made them up. I'm just trying to make this README look more interesting. But I do hope they will be asked one day.
+I actually made them up. I'm just trying to make this readme look more interesting. But I do hope they will be asked one day.

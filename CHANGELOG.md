@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.14.0](https://github.com/umatch-oficial/query/compare/v3.13.0...v3.14.0) (2023-11-27)
+
+
+### Features
+
+* allow RawValue in And/Or and improve JSDocs ([1e6fcbb](https://github.com/umatch-oficial/query/commit/1e6fcbb9f407dc17227ba985ff0cc705ba1f6c95))
+
 ## [3.13.0](https://github.com/umatch-oficial/query/compare/v3.12.0...v3.13.0) (2023-08-08)
 
 

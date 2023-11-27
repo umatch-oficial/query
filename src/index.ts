@@ -11,10 +11,10 @@ import {
 import { joinNonEmpty } from "@umatch/utils/array";
 import { deepClone } from "@umatch/utils/object";
 
-import AndClass from "./And";
+import AndClass, { type AndCondition } from "./And";
 import entryToString from "./entryToString";
 import getTableAndAlias from "./getTableAndAlias";
-import OrClass from "./Or";
+import OrClass, { type OrCondition } from "./Or";
 import RawValue from "./RawValue";
 import toArray from "./toArray";
 import toSQLValue from "./toSQLValue";
@@ -72,7 +72,7 @@ export function isValue(obj: unknown): obj is Value {
  *   ])
  * )
  */
-export function And(conditions: (string | Payload | OrClass)[]): AndClass {
+export function And(conditions: ReadonlyArray<AndCondition>): AndClass {
   return new AndClass(conditions);
 }
 
@@ -90,7 +90,7 @@ export function And(conditions: (string | Payload | OrClass)[]): AndClass {
  *   "expiration > NOW()"
  * ]))
  */
-export function Or(conditions: (string | Payload | AndClass)[]): OrClass {
+export function Or(conditions: ReadonlyArray<OrCondition>): OrClass {
   return new OrClass(conditions);
 }
 

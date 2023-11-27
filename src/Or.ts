@@ -5,11 +5,13 @@ import validateSQL from "./validateSQL";
 
 import type { Payload } from "./index";
 
+export type OrCondition = string | Payload | And | RawValue;
+
 /**
  * Class used to represent OR conditions.
  */
 export default class Or {
-  constructor(public conditions: (string | Payload | And | RawValue)[]) {}
+  constructor(public conditions: ReadonlyArray<OrCondition>) {}
 
   /**
    * Returns the string representation of the OR conditions.

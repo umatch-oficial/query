@@ -52,8 +52,25 @@ export function isValue(obj: unknown): obj is Value {
 /**
  * Returns an object used to represent AND conditions.
  *
+ * PS: conditions are validated against SQL injection attacks. This
+ * means that you cannot pass conditions including keywords like 'AND', 'OR'.
+ * To pass conditions including 'OR', use [Or]{@link Or}. Alternatively,
+ * you can use [Raw]{@link Raw} to pass raw SQL.
+ *
  * @example
- * query.where(Or(["expiration IS NULL", And(["expiration > NOW()", "created_at > NOW() - INTERVAL '1 day'"])]))
+ * query.where(
+ *   Or([
+ *     "expiration IS NULL",
+ *     And(["expiration > NOW()", "created_at > NOW() - INTERVAL '1 day'"])
+ *   ])
+ * )
+ * @example
+ * query.where(
+ *   Or([
+ *     "expiration IS NULL",
+ *     Raw("expiration > NOW() AND created_at > NOW() - INTERVAL '1 day'")
+ *   ])
+ * )
  */
 export function And(conditions: (string | Payload | OrClass)[]): AndClass {
   return new AndClass(conditions);
@@ -63,12 +80,15 @@ export function And(conditions: (string | Payload | OrClass)[]): AndClass {
  * Returns an object used to represent OR conditions.
  *
  * PS: conditions are validated against SQL injection attacks. This
- * means that you cannot pass conditions including the 'AND' keyword.
+ * means that you cannot pass conditions including keywords like 'AND', 'OR'.
  * To pass conditions including 'AND', use [And]{@link And}. Alternatively,
  * you can use [Raw]{@link Raw} to pass raw SQL.
  *
  * @example
- * query.where(Or(["expiration IS NULL", "expiration > NOW()"]))
+ * query.where(Or([
+ *   "expiration IS NULL",
+ *   "expiration > NOW()"
+ * ]))
  */
 export function Or(conditions: (string | Payload | AndClass)[]): OrClass {
   return new OrClass(conditions);

@@ -1,5 +1,6 @@
 import And from "./And";
 import entryToString from "./entryToString";
+import RawValue from "./RawValue";
 import validateSQL from "./validateSQL";
 
 import type { Payload } from "./index";
@@ -8,7 +9,7 @@ import type { Payload } from "./index";
  * Class used to represent OR conditions.
  */
 export default class Or {
-  constructor(public conditions: (string | Payload | And)[]) {}
+  constructor(public conditions: (string | Payload | And | RawValue)[]) {}
 
   /**
    * Returns the string representation of the OR conditions.
@@ -24,6 +25,8 @@ export default class Or {
             ? validateSQL(condition)
             : condition instanceof And
             ? condition.toString(alias)
+            : condition instanceof RawValue
+            ? condition.value
             : "(" +
               Object.entries(condition).map(entryToString(false, alias)).join(" AND ") +
               ")";

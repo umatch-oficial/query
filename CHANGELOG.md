@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.14.2](https://github.com/umatch-oficial/query/compare/v3.14.1...v3.14.2) (2023-12-01)
+
+
+### Bug Fixes
+
+* add RawValue to allowed arguments in Query.whereIn() and Query.whereNotIn() ([951dadd](https://github.com/umatch-oficial/query/commit/951dadd362cff0b1464724903e374f86f04ea81b))
+
 ## [3.14.1](https://github.com/umatch-oficial/query/compare/v3.14.0...v3.14.1) (2023-11-27)
 
 ## [3.14.0](https://github.com/umatch-oficial/query/compare/v3.13.0...v3.14.0) (2023-11-27)

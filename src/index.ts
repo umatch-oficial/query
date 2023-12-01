@@ -499,13 +499,13 @@ export class Query<Result = unknown> {
    *
    * Iterates over entries, adding one condition per entry.
    */
-  public whereIn(conditions: Dictionary<Value[]>): this;
+  public whereIn(conditions: Dictionary<Array<Value | RawValue>>): this;
   /**
    * Adds a 'where in' condition.
    *
    * Transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
-  public whereIn(field: string, values: Value[]): this;
+  public whereIn(field: string, values: Array<Value | RawValue>): this;
   /**
    * Adds one or more 'where in' conditions.
    *
@@ -513,8 +513,8 @@ export class Query<Result = unknown> {
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
   public whereIn(
-    fieldOrConditions: string | Dictionary<Value[]>,
-    values?: Value[],
+    fieldOrConditions: string | Dictionary<Array<Value | RawValue>>,
+    values?: Array<Value | RawValue>,
   ): this {
     if (values) {
       if (!isString(fieldOrConditions)) throw new Error("field must be a string");
@@ -535,13 +535,13 @@ export class Query<Result = unknown> {
    *
    * Iterates over entries, adding one condition per entry.
    */
-  public whereNotIn(condition: Dictionary<Value[]>): this;
+  public whereNotIn(condition: Dictionary<Array<Value | RawValue>>): this;
   /**
    * Adds a 'where not in' condition.
    *
    * Transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
-  public whereNotIn(field: string, values: Value[]): this;
+  public whereNotIn(field: string, values: Array<Value | RawValue>): this;
   /**
    * Adds one or more 'where not in' conditions.
    *
@@ -549,8 +549,8 @@ export class Query<Result = unknown> {
    * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
   public whereNotIn(
-    fieldOrConditions: string | Dictionary<Value[]>,
-    values?: Value[],
+    fieldOrConditions: string | Dictionary<Array<Value | RawValue>>,
+    values?: Array<Value | RawValue>,
   ): this {
     if (values) {
       if (!isString(fieldOrConditions)) throw new Error("field must be a string");

@@ -27,19 +27,6 @@ import type { Moment } from 'moment';
 export type Value = Primitive | Date | DateTime | Moment | RawValue;
 export type Payload = Dictionary<Value>;
 export type JoinPayload = Dictionary<Primitive | OrClass>;
-export type Conditions = {
-  select?: OneOrArray<string>;
-  from?: string | Query;
-  alias?: string;
-  join?: string[];
-  where?: OneOrArray<string> | Payload;
-  groupBy?: OneOrArray<string>;
-  having?: OneOrArray<string>;
-  orderBy?: OneOrArray<string>;
-  limit?: number;
-  offset?: number;
-  trx?: any;
-};
 export { toSQLValue };
 
 export function isValue(obj: unknown): obj is Value {
@@ -109,68 +96,46 @@ export function Raw(value: Primitive): RawValue {
   return new RawValue(value);
 }
 
-const queryPropertyNamesAndDefaultValues = {
-  with: ['_withs', []],
-  select: ['_selects', []],
-  from: ['_from', ''],
-  alias: ['_alias', 'sub'],
-  join: ['_joins', []],
-  where: ['_wheres', []],
-  groupBy: ['_groups', []],
-  having: ['_havings', []],
-  orderBy: ['_orders', []],
-  limit: ['_limit', undefined],
-  offset: ['_offset', undefined],
-  trx: ['_trx', undefined],
-};
-type QueryProperty = keyof typeof queryPropertyNamesAndDefaultValues;
+const propertyNamesAndInitializers = {
+  with: ['_withs', () => []],
+  select: ['_selects', () => []],
+  from: ['_from', () => ''],
+  alias: ['_alias', () => 'sub'],
+  join: ['_joins', () => []],
+  where: ['_wheres', () => []],
+  groupBy: ['_groups', () => []],
+  having: ['_havings', () => []],
+  orderBy: ['_orders', () => []],
+  limit: ['_limit', () => undefined],
+  offset: ['_offset', () => undefined],
+  trx: ['_trx', () => undefined],
+} as const;
+export type QueryProperty = keyof typeof propertyNamesAndInitializers;
 
 export class Query<Result = unknown> {
-  private _withs: string[];
-  private _selects: string[];
+  private readonly _withs: Array<string>;
+  private readonly _selects: Array<string>;
   private _from: string;
   private _alias: string;
-  private _joins: string[];
-  private _wheres: string[];
-  private _groups: string[];
-  private _havings: string[];
-  private _orders: string[];
+  private readonly _joins: Array<string>;
+  private readonly _wheres: Array<string>;
+  private readonly _groups: Array<string>;
+  private readonly _havings: Array<string>;
+  private readonly _orders: Array<string>;
   private _limit?: number;
   private _offset?: number;
   private _trx?: any;
 
-  constructor(conditions?: Conditions) {
-    const {
-      select,
-      from,
-      alias,
-      join,
-      where,
-      groupBy,
-      having,
-      orderBy,
-      limit,
-      offset,
-      trx,
-    } = conditions ?? {};
-    this._withs = [];
-    this._selects = toArray(select).map(validateSQL);
-    this._from = isNullOrUndefined(from)
-      ? queryPropertyNamesAndDefaultValues['from'][1]
-      : isString(from)
-      ? validateSQL(from)
-      : Query._parseSubquery(from);
-    this._alias = isNullOrUndefined(alias)
-      ? queryPropertyNamesAndDefaultValues['alias'][1]
-      : validateSQL(alias);
-    this._joins = toArray(join).map(validateSQL);
-    this._wheres = toArray(where).map(validateSQL);
-    this._groups = toArray(groupBy).map(validateSQL);
-    this._havings = toArray(having).map(validateSQL);
-    this._orders = toArray(orderBy).map(validateSQL);
-    this._limit = limit;
-    this._offset = offset;
-    this._trx = trx;
+  constructor() {
+    this._withs = propertyNamesAndInitializers['with'][1]();
+    this._selects = propertyNamesAndInitializers['select'][1]();
+    this._from = propertyNamesAndInitializers['from'][1]();
+    this._alias = propertyNamesAndInitializers['alias'][1]();
+    this._joins = propertyNamesAndInitializers['join'][1]();
+    this._wheres = propertyNamesAndInitializers['where'][1]();
+    this._groups = propertyNamesAndInitializers['groupBy'][1]();
+    this._havings = propertyNamesAndInitializers['having'][1]();
+    this._orders = propertyNamesAndInitializers['orderBy'][1]();
     this._run = Query._run?.bind(this);
   }
 
@@ -239,7 +204,7 @@ export class Query<Result = unknown> {
     let _alias;
     let _query;
     if (isString(query)) {
-      _alias = alias ?? queryPropertyNamesAndDefaultValues['alias'][1];
+      _alias = alias ?? propertyNamesAndInitializers['alias'][1];
       _query = query;
     } else {
       _alias = query._alias;
@@ -727,15 +692,17 @@ export class Query<Result = unknown> {
    */
   public clear(properties: OneOrArray<QueryProperty>): this {
     toArray(properties).forEach((prop) => {
-      const [key, defaultValue] = queryPropertyNamesAndDefaultValues[prop];
+      const [key, initializer] = propertyNamesAndInitializers[prop];
       // @ts-expect-error
-      this[key] = deepClone(defaultValue);
+      this[key] = initializer();
     });
     return this;
   }
 
   /**
-   * Returns a copy of the current query.
+   * Returns a copy of the current query, optionally excluding some properties.
+   *
+   * @param {QueryProperty[]} [exclude] Properties that should not be copied
    */
   public clone(exclude: QueryProperty[] = []): Query {
     const newQuery = new Query();

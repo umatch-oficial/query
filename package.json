@@ -24,10 +24,11 @@
     "build": "tsc --build src",
     "test": "jest",
     "lint": "eslint . --ext=.ts",
-    "prepublishOnly": "npm run lint && npm run build && npm test",
-    "prepare": "npm run build",
-    "push-publish": "git push --follow-tags && npm publish --ignore-scripts",
-    "release": "npm run lint && npm run build && npm test && commit-and-tag-version"
+    "format": "prettier --check --log-level warn --cache --cache-strategy metadata --config ./.prettierrc.js .",
+    "prepublishOnly": "pnpm lint && pnpm format && pnpm build && pnpm test",
+    "prepare": "pnpm build",
+    "push-publish": "git push --follow-tags && pnpm publish --ignore-scripts",
+    "release": "pnpm prepublishOnly && pnpm commit-and-tag-version -a"
   },
   "config": {
     "commitizen": {

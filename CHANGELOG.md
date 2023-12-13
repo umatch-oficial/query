@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.0.0](https://github.com/umatch-oficial/query/compare/v3.14.4...v4.0.0) (2023-12-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* removed the ability to pass an object of conditions to the query builder constructor.
+
+### Features
+
+* restrict query builder to fluent notation only ([d8ae3a2](https://github.com/umatch-oficial/query/commit/d8ae3a2fc79de01933eaa7b2916f6d253157dabc))
+
 ## [3.14.4](https://github.com/umatch-oficial/query/compare/v3.14.3...v3.14.4) (2023-12-13)
 
 ## [3.14.3](https://github.com/umatch-oficial/query/compare/v3.14.2...v3.14.3) (2023-12-01)

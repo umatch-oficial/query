@@ -7,22 +7,22 @@ import {
   type Dictionary,
   type OneOrArray,
   type Primitive,
-} from "@umatch/utils";
-import { joinNonEmpty } from "@umatch/utils/array";
-import { deepClone } from "@umatch/utils/object";
+} from '@umatch/utils';
+import { deepClone } from '@umatch/utils/object';
+import { joinNonEmpty } from '@umatch/utils/string';
 
-import AndClass, { type AndCondition } from "./And";
-import entryToString from "./entryToString";
-import getTableAndAlias from "./getTableAndAlias";
-import OrClass, { type OrCondition } from "./Or";
-import RawValue from "./RawValue";
-import toArray from "./toArray";
-import toSQLValue from "./toSQLValue";
-import validateSQL from "./validateSQL";
+import AndClass, { type AndCondition } from './And';
+import entryToString from './entryToString';
+import getTableAndAlias from './getTableAndAlias';
+import OrClass, { type OrCondition } from './Or';
+import RawValue from './RawValue';
+import toArray from './toArray';
+import toSQLValue from './toSQLValue';
+import validateSQL from './validateSQL';
 
-import type { Operator } from "./getOperator";
-import type { DateTime } from "luxon";
-import type { Moment } from "moment";
+import type { Operator } from './getOperator';
+import type { DateTime } from 'luxon';
+import type { Moment } from 'moment';
 
 export type Value = Primitive | Date | DateTime | Moment | RawValue;
 export type Payload = Dictionary<Value>;
@@ -46,7 +46,7 @@ export function isValue(obj: unknown): obj is Value {
   if (obj === null) return true;
   if (isPrimitive(obj)) return true;
 
-  return ["Date", "DateTime", "Moment", "RawValue"].includes(obj?.constructor.name!);
+  return ['Date', 'DateTime', 'Moment', 'RawValue'].includes(obj?.constructor.name!);
 }
 
 /**
@@ -110,18 +110,18 @@ export function Raw(value: Primitive): RawValue {
 }
 
 const queryPropertyNamesAndDefaultValues = {
-  with: ["_withs", []],
-  select: ["_selects", []],
-  from: ["_from", ""],
-  alias: ["_alias", "sub"],
-  join: ["_joins", []],
-  where: ["_wheres", []],
-  groupBy: ["_groups", []],
-  having: ["_havings", []],
-  orderBy: ["_orders", []],
-  limit: ["_limit", undefined],
-  offset: ["_offset", undefined],
-  trx: ["_trx", undefined],
+  with: ['_withs', []],
+  select: ['_selects', []],
+  from: ['_from', ''],
+  alias: ['_alias', 'sub'],
+  join: ['_joins', []],
+  where: ['_wheres', []],
+  groupBy: ['_groups', []],
+  having: ['_havings', []],
+  orderBy: ['_orders', []],
+  limit: ['_limit', undefined],
+  offset: ['_offset', undefined],
+  trx: ['_trx', undefined],
 };
 type QueryProperty = keyof typeof queryPropertyNamesAndDefaultValues;
 
@@ -156,12 +156,12 @@ export class Query<Result = unknown> {
     this._withs = [];
     this._selects = toArray(select).map(validateSQL);
     this._from = isNullOrUndefined(from)
-      ? queryPropertyNamesAndDefaultValues["from"][1]
+      ? queryPropertyNamesAndDefaultValues['from'][1]
       : isString(from)
       ? validateSQL(from)
       : Query._parseSubquery(from);
     this._alias = isNullOrUndefined(alias)
-      ? queryPropertyNamesAndDefaultValues["alias"][1]
+      ? queryPropertyNamesAndDefaultValues['alias'][1]
       : validateSQL(alias);
     this._joins = toArray(join).map(validateSQL);
     this._wheres = toArray(where).map(validateSQL);
@@ -239,7 +239,7 @@ export class Query<Result = unknown> {
     let _alias;
     let _query;
     if (isString(query)) {
-      _alias = alias ?? queryPropertyNamesAndDefaultValues["alias"][1];
+      _alias = alias ?? queryPropertyNamesAndDefaultValues['alias'][1];
       _query = query;
     } else {
       _alias = query._alias;
@@ -316,9 +316,9 @@ export class Query<Result = unknown> {
    * If 'table' is a Query, it is parsed to a subquery string.
    */
   private _join(
-    joinType: "LEFT" | "INNER" | "OUTER",
+    joinType: 'LEFT' | 'INNER' | 'OUTER',
     table: string | Query,
-    on: string[] | JoinPayload,
+    on: readonly string[] | JoinPayload,
   ): void {
     let tableAlias: string;
     let tableName: string;
@@ -331,14 +331,14 @@ export class Query<Result = unknown> {
       joinTable = Query._parseSubquery(table);
     }
 
-    let ons: string[];
+    let ons: readonly string[];
     if (isArray(on)) {
       ons = on.map(validateSQL);
     } else {
       ons = toArray(on, entryToString(false, tableAlias));
     }
 
-    const clause = `${joinType} JOIN ${joinTable} ON ${ons.join(" AND ")}`;
+    const clause = `${joinType} JOIN ${joinTable} ON ${ons.join(' AND ')}`;
     this._joins.push(clause);
   }
 
@@ -348,7 +348,7 @@ export class Query<Result = unknown> {
    * Parses arrays of conditions, but does not transform values.
    */
   public innerJoin(table: string | Query, on: string[] | JoinPayload): this {
-    this._join("INNER", table, on);
+    this._join('INNER', table, on);
     return this;
   }
 
@@ -358,7 +358,7 @@ export class Query<Result = unknown> {
    * Parses arrays of conditions, but does not transform values.
    */
   public leftJoin(table: string | Query, on: string[] | JoinPayload): this {
-    this._join("LEFT", table, on);
+    this._join('LEFT', table, on);
     return this;
   }
 
@@ -368,7 +368,7 @@ export class Query<Result = unknown> {
    * Parses arrays of conditions, but does not transform values.
    */
   public outerJoin(table: string | Query, on: string[] | JoinPayload): this {
-    this._join("OUTER", table, on);
+    this._join('OUTER', table, on);
     return this;
   }
 
@@ -381,7 +381,7 @@ export class Query<Result = unknown> {
     const alias = `exclude_${table}`;
     // the column to exclude MUST be one of the joined columns, god knows why.
     const [excludeColumn] = Object.keys(conditions);
-    this._join("LEFT", `${table} AS ${alias}`, conditions);
+    this._join('LEFT', `${table} AS ${alias}`, conditions);
     this.whereRaw(`${alias}.${excludeColumn} IS NULL`);
     return this;
   }
@@ -450,12 +450,12 @@ export class Query<Result = unknown> {
           this._wheres.push(fieldOrConditions.toString());
           return this;
         } else {
-          throw new Error("conditions must be a payload or an Or object");
+          throw new Error('conditions must be a payload or an Or object');
         }
       } else {
         // case 2
-        if (!isString(fieldOrConditions)) throw new Error("field must be a string");
-        if (!isValue(valueOrOperator)) throw new Error("value must be a Primitive");
+        if (!isString(fieldOrConditions)) throw new Error('field must be a string');
+        if (!isValue(valueOrOperator)) throw new Error('value must be a Primitive');
         validateSQL(fieldOrConditions);
 
         const condition =
@@ -468,12 +468,12 @@ export class Query<Result = unknown> {
     }
 
     // case 3
-    if (!isString(fieldOrConditions)) throw new Error("field must be a string");
-    if (!isString(valueOrOperator)) throw new Error("operator must be a string");
-    if (!isValue(valueOrOperator)) throw new Error("value must be a Primitive");
+    if (!isString(fieldOrConditions)) throw new Error('field must be a string');
+    if (!isString(valueOrOperator)) throw new Error('operator must be a string');
+    if (!isValue(valueOrOperator)) throw new Error('value must be a Primitive');
     if (value === null) {
       throw new Error(
-        "Attempted comparison with null!\nThis is often an error. If it was intended, use whereRaw instead.",
+        'Attempted comparison with null!\nThis is often an error. If it was intended, use whereRaw instead.',
       );
     }
     validateSQL(fieldOrConditions);
@@ -517,11 +517,11 @@ export class Query<Result = unknown> {
     values?: Array<Value> | RawValue,
   ): this {
     if (values) {
-      if (!isString(fieldOrConditions)) throw new Error("field must be a string");
+      if (!isString(fieldOrConditions)) throw new Error('field must be a string');
       validateSQL(fieldOrConditions);
       this._wheres.push(`${fieldOrConditions} IN ${toSQLValue(values)}`);
     } else {
-      if (isString(fieldOrConditions)) throw new Error("Missing values");
+      if (isString(fieldOrConditions)) throw new Error('Missing values');
       Object.entries(fieldOrConditions).forEach(
         ([field, vals]) => this.whereIn(field, vals),
         this,
@@ -553,11 +553,11 @@ export class Query<Result = unknown> {
     values?: Array<Value> | RawValue,
   ): this {
     if (values) {
-      if (!isString(fieldOrConditions)) throw new Error("field must be a string");
+      if (!isString(fieldOrConditions)) throw new Error('field must be a string');
       validateSQL(fieldOrConditions);
       this._wheres.push(`${fieldOrConditions} NOT IN ${toSQLValue(values)}`);
     } else {
-      if (isString(fieldOrConditions)) throw new Error("Missing values");
+      if (isString(fieldOrConditions)) throw new Error('Missing values');
       Object.entries(fieldOrConditions).forEach(
         ([field, vals]) => this.whereNotIn(field, vals),
         this,
@@ -662,7 +662,7 @@ export class Query<Result = unknown> {
   /**
    * Adds a column to the 'order by' clause.
    */
-  public orderBy(column: string, order: "asc" | "desc"): this {
+  public orderBy(column: string, order: 'asc' | 'desc'): this {
     validateSQL(column);
     this._orders.push(order ? `${column} ${order}` : column);
     return this;
@@ -684,7 +684,7 @@ export class Query<Result = unknown> {
    * @throws {Error} if the limit has already been set
    */
   public limit(value: number): this {
-    if (this._limit) throw new Error("Query already has limit");
+    if (this._limit) throw new Error('Query already has limit');
     this._limit = value;
     return this;
   }
@@ -695,7 +695,7 @@ export class Query<Result = unknown> {
    * @throws {Error} if the offset has already been set
    */
   public offset(value: number): this {
-    if (this._offset) throw new Error("Query already has offset");
+    if (this._offset) throw new Error('Query already has offset');
     this._offset = value;
     return this;
   }
@@ -706,7 +706,7 @@ export class Query<Result = unknown> {
    * @throws {Error} if the transaction has already been set
    */
   public trx(trx: any): this {
-    if (this._trx) throw new Error("Query already has transaction");
+    if (this._trx) throw new Error('Query already has transaction');
     this._trx = trx;
     return this;
   }
@@ -762,11 +762,11 @@ export class Query<Result = unknown> {
   private _buildClauseString(
     conditions: (string | number)[] | undefined,
     name: string,
-    separator: string = ",\n  ",
+    separator: string = ',\n  ',
   ): string {
     const joinedConditions = joinNonEmpty(conditions, separator);
-    if (!joinedConditions) return "";
-    return joinNonEmpty([name, joinedConditions], " ");
+    if (!joinedConditions) return '';
+    return joinNonEmpty([name, joinedConditions], ' ');
   }
 
   /**
@@ -780,18 +780,18 @@ export class Query<Result = unknown> {
 
     return joinNonEmpty(
       [
-        this._buildClauseString(this._withs, "WITH", ",\n"),
-        `SELECT ${this._selects?.join(",\n  ") || "*"}`,
+        this._buildClauseString(this._withs, 'WITH', ',\n'),
+        `SELECT ${this._selects?.join(',\n  ') || '*'}`,
         `FROM ${this._from}`,
-        this._buildClauseString(this._joins, "", "\n"),
-        this._buildClauseString(this._wheres, "WHERE", "\n  AND "),
-        this._buildClauseString(this._groups, "GROUP BY"),
-        this._buildClauseString(this._havings, "HAVING"),
-        this._buildClauseString(this._orders, "ORDER BY"),
-        this._limit ? `LIMIT ${this._limit}` : "",
-        this._offset ? `OFFSET ${this._offset}` : "",
+        this._buildClauseString(this._joins, '', '\n'),
+        this._buildClauseString(this._wheres, 'WHERE', '\n  AND '),
+        this._buildClauseString(this._groups, 'GROUP BY'),
+        this._buildClauseString(this._havings, 'HAVING'),
+        this._buildClauseString(this._orders, 'ORDER BY'),
+        this._limit ? `LIMIT ${this._limit}` : '',
+        this._offset ? `OFFSET ${this._offset}` : '',
       ],
-      "\n",
+      '\n',
     );
   }
 
@@ -814,7 +814,7 @@ export class Query<Result = unknown> {
    * @throws {Error} if the 'init' method hasn't been called
    */
   async run(): Promise<Result[]> {
-    if (!this._run) throw new Error("Cannot run without executing Query.init()");
+    if (!this._run) throw new Error('Cannot run without executing Query.init()');
 
     const query = this.build();
     return (await this._run(query)) as Promise<Result[]>;

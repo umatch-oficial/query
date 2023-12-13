@@ -1,12 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { isPrimitive, type Primitive } from "@umatch/utils";
-import { joinNonEmpty } from "@umatch/utils/array";
+import { isPrimitive, type Primitive } from '@umatch/utils';
+import { joinNonEmpty } from '@umatch/utils/string';
 
-import getOperator from "./getOperator";
-import OrClass from "./Or";
-import toSQLValue from "./toSQLValue";
+import getOperator from './getOperator';
+import OrClass from './Or';
+import toSQLValue from './toSQLValue';
 
-import type { Value } from "./index";
+import type { Value } from './index';
 
 /**
  * Returns a function, that converts entries from Object.entries()
@@ -26,11 +26,11 @@ export default function entryToString(
   transform: boolean = true,
   alias?: string,
 ): (entry: [string, unknown]) => string {
-  const prefix = alias ? `${alias}.` : "";
+  const prefix = alias ? `${alias}.` : '';
   return ([key, val]) => {
     if (val instanceof OrClass) {
       val.conditions = val.conditions.map((condition) =>
-        typeof condition === "string" ? `${prefix}${key} ${condition}` : condition,
+        typeof condition === 'string' ? `${prefix}${key} ${condition}` : condition,
       );
       return val.toString(alias);
     }
@@ -44,6 +44,6 @@ export default function entryToString(
       if (!isPrimitive(value)) throw new Error(`Unexpected type: ${typeof value}`);
       finalValue = value;
     }
-    return joinNonEmpty([`${prefix}${key}`, operator ?? "=", finalValue], " ");
+    return joinNonEmpty([`${prefix}${key}`, operator ?? '=', finalValue], ' ');
   };
 }

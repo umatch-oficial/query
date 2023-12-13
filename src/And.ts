@@ -1,9 +1,9 @@
-import entryToString from "./entryToString";
-import Or from "./Or";
-import RawValue from "./RawValue";
-import validateSQL from "./validateSQL";
+import entryToString from './entryToString';
+import Or from './Or';
+import RawValue from './RawValue';
+import validateSQL from './validateSQL';
 
-import type { Payload } from "./index";
+import type { Payload } from './index';
 
 export type AndCondition = string | Payload | Or | RawValue;
 
@@ -20,21 +20,21 @@ export default class And {
    */
   public toString(alias?: string): string {
     return (
-      "(" +
+      '(' +
       this.conditions
         .map((condition) => {
-          return typeof condition === "string"
+          return typeof condition === 'string'
             ? validateSQL(condition)
             : condition instanceof Or
             ? condition.toString(alias)
             : condition instanceof RawValue
             ? condition.value
-            : "(" +
-              Object.entries(condition).map(entryToString(false, alias)).join(" AND ") +
-              ")";
+            : '(' +
+              Object.entries(condition).map(entryToString(false, alias)).join(' AND ') +
+              ')';
         })
-        .join(" AND ") +
-      ")"
+        .join(' AND ') +
+      ')'
     );
   }
 }

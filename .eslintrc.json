@@ -1,6 +1,6 @@
 {
-    "parserOptions": {
-        "project": ["tsconfig.base.json"]
-    },
-    "extends": ["@umatch/eslint-config"]
+  "parserOptions": {
+    "project": ["tsconfig.base.json"]
+  },
+  "extends": ["@umatch/eslint-config"]
 }

@@ -1,8 +1,8 @@
-import { DateTime } from "luxon";
+import { DateTime } from 'luxon';
 
-import { And, Query, Or } from "../src";
+import { And, Query, Or } from '../src';
 
-declare module "../src" {
+declare module '../src' {
   interface Query<Result = unknown> {
     extraMethod: () => Result;
   }
@@ -38,26 +38,26 @@ declare module "../src" {
   - post_id
  */
 
-describe("Query class", () => {
-  test("is extendable", () => {
-    Query.prototype.extraMethod = () => "extra";
-    expect(new Query().extraMethod()).toBe("extra");
+describe('Query class', () => {
+  test('is extendable', () => {
+    Query.prototype.extraMethod = () => 'extra';
+    expect(new Query().extraMethod()).toBe('extra');
   });
-  test("can be cloned", () => {
-    const query = new Query({ from: "users", select: ["id"] });
+  test('can be cloned', () => {
+    const query = new Query({ from: 'users', select: ['id'] });
     const cloned = query.clone();
     expect(query === cloned).toBeFalsy();
-    cloned.select("name");
+    cloned.select('name');
     // @ts-expect-error
-    expect(query._selects).toEqual(["id"]);
+    expect(query._selects).toEqual(['id']);
     // @ts-expect-error
-    expect(cloned._selects).toEqual(["id", "name"]);
+    expect(cloned._selects).toEqual(['id', 'name']);
   });
-  test("can be initialized", async () => {
+  test('can be initialized', async () => {
     let queryString;
     Query.init(async (query: string) => (queryString = query));
-    await new Query({ from: "users" }).run();
-    expect("\n" + queryString).toBe(
+    await new Query({ from: 'users' }).run();
+    expect('\n' + queryString).toBe(
       `
 SELECT *
 FROM users`,
@@ -66,76 +66,76 @@ FROM users`,
   test("throws an error if it hasn't been initialized", async () => {
     // @ts-expect-error
     Query.init(undefined);
-    await expect(() => new Query({ from: "users" }).run()).rejects.toThrow("Cannot run");
+    await expect(() => new Query({ from: 'users' }).run()).rejects.toThrow('Cannot run');
   });
   test("throws an error if there is no 'from' clause", () => {
-    expect(() => new Query().build()).toThrow("Cannot build");
+    expect(() => new Query().build()).toThrow('Cannot build');
   });
   test("throws an error if there is a 'having' clause, but no 'group by' clause", () => {
     expect(() => {
-      new Query({ having: "" }).build();
-    }).toThrow("Cannot build");
+      new Query({ having: '' }).build();
+    }).toThrow('Cannot build');
   });
 });
 
-describe("Or class", () => {
-  test("works with Payloads and strings", () => {
+describe('Or class', () => {
+  test('works with Payloads and strings', () => {
     const orString = Or([`content = ''`, { content: null, user_id: null }]).toString();
     expect(orString).toBe(`(content = '' OR (content IS NULL AND user_id IS NULL))`);
   });
-  test("works in where clauses", () => {
-    const queryString = new Query({ from: "users" })
-      .where(Or(["deleted_at IS NULL", "deleted_at > NOW()"]))
+  test('works in where clauses', () => {
+    const queryString = new Query({ from: 'users' })
+      .where(Or(['deleted_at IS NULL', 'deleted_at > NOW()']))
       .build();
-    expect("\n" + queryString).toBe(`
+    expect('\n' + queryString).toBe(`
 SELECT *
 FROM users
 WHERE (deleted_at IS NULL OR deleted_at > NOW())`);
   });
-  test("works in join clauses", () => {
-    const queryString = new Query({ from: "users" })
-      .leftJoin("posts", {
-        user_id: "users.id",
-        closed_at: Or(["IS NULL", "> NOW()"]),
+  test('works in join clauses', () => {
+    const queryString = new Query({ from: 'users' })
+      .leftJoin('posts', {
+        user_id: 'users.id',
+        closed_at: Or(['IS NULL', '> NOW()']),
       })
       .build();
-    expect("\n" + queryString).toBe(`
+    expect('\n' + queryString).toBe(`
 SELECT *
 FROM users
 LEFT JOIN posts AS p ON p.user_id = users.id AND (p.closed_at IS NULL OR p.closed_at > NOW())`);
   });
 });
 
-describe("And class", () => {
-  test("works inside Or", () => {
+describe('And class', () => {
+  test('works inside Or', () => {
     const orString = Or([
       `content = ''`,
-      And(["content IS NULL", "user_id IS NULL"]),
+      And(['content IS NULL', 'user_id IS NULL']),
     ]).toString();
     expect(orString).toBe(`(content = '' OR (content IS NULL AND user_id IS NULL))`);
   });
 });
 
-describe("query.from()", () => {
-  test("works with string", () => {
-    const queryString = new Query().from("users").build();
-    expect("\n" + queryString).toBe(
+describe('query.from()', () => {
+  test('works with string', () => {
+    const queryString = new Query().from('users').build();
+    expect('\n' + queryString).toBe(
       `
 SELECT *
 FROM users`,
     );
   });
-  test("works with Query", () => {
+  test('works with Query', () => {
     const subQuery = new Query({
-      select: "CASE WHEN upvotes > downvotes THEN 1 ELSE 0 END as has_positive_karma",
-      from: "posts",
+      select: 'CASE WHEN upvotes > downvotes THEN 1 ELSE 0 END as has_positive_karma',
+      from: 'posts',
     });
     const queryString = new Query({
-      select: "sum(has_positive_karma)/count(*) as positive_karma_ratio",
+      select: 'sum(has_positive_karma)/count(*) as positive_karma_ratio',
     })
       .from(subQuery)
       .build();
-    expect("\n" + queryString).toBe(
+    expect('\n' + queryString).toBe(
       `
 SELECT sum(has_positive_karma)/count(*) as positive_karma_ratio
 FROM (
@@ -146,7 +146,7 @@ FROM posts
   });
 });
 
-describe("alias methods", () => {
+describe('alias methods', () => {
   const expectedQueryString = `
 SELECT *
 FROM (
@@ -154,38 +154,38 @@ SELECT *
 FROM users
 ) AS q`;
 
-  test("query.as()", () => {
-    const subQuery = new Query({ from: "users" }).as("q");
+  test('query.as()', () => {
+    const subQuery = new Query({ from: 'users' }).as('q');
     const queryString = new Query({ from: subQuery }).build();
-    expect("\n" + queryString).toBe(expectedQueryString);
+    expect('\n' + queryString).toBe(expectedQueryString);
   });
-  test("query.alias()", () => {
-    const subQuery = new Query({ from: "users" }).alias("q");
+  test('query.alias()', () => {
+    const subQuery = new Query({ from: 'users' }).alias('q');
     const queryString = new Query({ from: subQuery }).build();
-    expect("\n" + queryString).toBe(expectedQueryString);
+    expect('\n' + queryString).toBe(expectedQueryString);
   });
 });
 
-describe("query.select()", () => {
-  test("works with single field", () => {
-    const queryString = new Query({ from: "comments" }).select("content").build();
-    expect("\n" + queryString).toBe(`
+describe('query.select()', () => {
+  test('works with single field', () => {
+    const queryString = new Query({ from: 'comments' }).select('content').build();
+    expect('\n' + queryString).toBe(`
 SELECT content
 FROM comments`);
   });
-  test("works with array of fields", () => {
-    const queryString = new Query({ from: "comments" }).select(["content", "id"]).build();
-    expect("\n" + queryString).toBe(`
+  test('works with array of fields', () => {
+    const queryString = new Query({ from: 'comments' }).select(['content', 'id']).build();
+    expect('\n' + queryString).toBe(`
 SELECT content,
   id
 FROM comments`);
   });
 });
 
-describe("join methods", () => {
+describe('join methods', () => {
   const query = new Query({
-    select: ["users.id", "count(posts.*)"],
-    from: "users",
+    select: ['users.id', 'count(posts.*)'],
+    from: 'users',
   });
   const expectedQueryString = (type: string) => `
 SELECT users.id,
@@ -193,63 +193,63 @@ SELECT users.id,
 FROM users
 ${type} JOIN posts AS p ON p.user_id = users.id`;
 
-  describe("query.innerJoin()", () => {
-    test("works with array of conditions", () => {
+  describe('query.innerJoin()', () => {
+    test('works with array of conditions', () => {
       const queryString = query
         .clone()
-        .innerJoin("posts as p", ["p.user_id = users.id"])
+        .innerJoin('posts as p', ['p.user_id = users.id'])
         .build();
-      expect("\n" + queryString).toBe(expectedQueryString("INNER"));
+      expect('\n' + queryString).toBe(expectedQueryString('INNER'));
     });
-    test("works with Payload", () => {
+    test('works with Payload', () => {
       const queryString = query
         .clone()
-        .innerJoin("posts as p", { user_id: "users.id" })
+        .innerJoin('posts as p', { user_id: 'users.id' })
         .build();
-      expect("\n" + queryString).toBe(expectedQueryString("INNER"));
-    });
-  });
-
-  describe("query.leftJoin()", () => {
-    test("works with array of conditions", () => {
-      const queryString = query
-        .clone()
-        .leftJoin("posts as p", ["p.user_id = users.id"])
-        .build();
-      expect("\n" + queryString).toBe(expectedQueryString("LEFT"));
-    });
-    test("works with Payload", () => {
-      const queryString = query
-        .clone()
-        .leftJoin("posts as p", { user_id: "users.id" })
-        .build();
-      expect("\n" + queryString).toBe(expectedQueryString("LEFT"));
+      expect('\n' + queryString).toBe(expectedQueryString('INNER'));
     });
   });
 
-  describe("query.outerJoin()", () => {
-    test("works with array of conditions", () => {
+  describe('query.leftJoin()', () => {
+    test('works with array of conditions', () => {
       const queryString = query
         .clone()
-        .outerJoin("posts as p", ["p.user_id = users.id"])
+        .leftJoin('posts as p', ['p.user_id = users.id'])
         .build();
-      expect("\n" + queryString).toBe(expectedQueryString("OUTER"));
+      expect('\n' + queryString).toBe(expectedQueryString('LEFT'));
     });
-    test("works with Payload", () => {
+    test('works with Payload', () => {
       const queryString = query
         .clone()
-        .outerJoin("posts as p", { user_id: "users.id" })
+        .leftJoin('posts as p', { user_id: 'users.id' })
         .build();
-      expect("\n" + queryString).toBe(expectedQueryString("OUTER"));
+      expect('\n' + queryString).toBe(expectedQueryString('LEFT'));
     });
   });
 
-  describe("query.excludeJoin()", () => {
-    test("works with Payload", () => {
-      const queryString = new Query({ from: "users" })
-        .excludeJoin("posts", { user_id: "users.id" })
+  describe('query.outerJoin()', () => {
+    test('works with array of conditions', () => {
+      const queryString = query
+        .clone()
+        .outerJoin('posts as p', ['p.user_id = users.id'])
         .build();
-      expect("\n" + queryString).toBe(`
+      expect('\n' + queryString).toBe(expectedQueryString('OUTER'));
+    });
+    test('works with Payload', () => {
+      const queryString = query
+        .clone()
+        .outerJoin('posts as p', { user_id: 'users.id' })
+        .build();
+      expect('\n' + queryString).toBe(expectedQueryString('OUTER'));
+    });
+  });
+
+  describe('query.excludeJoin()', () => {
+    test('works with Payload', () => {
+      const queryString = new Query({ from: 'users' })
+        .excludeJoin('posts', { user_id: 'users.id' })
+        .build();
+      expect('\n' + queryString).toBe(`
 SELECT *
 FROM users
 LEFT JOIN posts AS exclude_posts ON exclude_posts.user_id = users.id
@@ -257,52 +257,52 @@ WHERE exclude_posts.user_id IS NULL`);
     });
   });
 
-  describe("query.joinRaw()", () => {
-    test("works with single clause", () => {
+  describe('query.joinRaw()', () => {
+    test('works with single clause', () => {
       const queryString = query
         .clone()
-        .joinRaw("LEFT JOIN posts AS p ON p.user_id = users.id")
+        .joinRaw('LEFT JOIN posts AS p ON p.user_id = users.id')
         .build();
-      expect("\n" + queryString).toBe(expectedQueryString("LEFT"));
+      expect('\n' + queryString).toBe(expectedQueryString('LEFT'));
     });
-    test("works with array of clauses", () => {
+    test('works with array of clauses', () => {
       const queryString = query
         .clone()
-        .joinRaw(["LEFT JOIN posts AS p ON p.user_id = users.id"])
+        .joinRaw(['LEFT JOIN posts AS p ON p.user_id = users.id'])
         .build();
-      expect("\n" + queryString).toBe(expectedQueryString("LEFT"));
+      expect('\n' + queryString).toBe(expectedQueryString('LEFT'));
     });
   });
 });
 
-describe("where methods", () => {
-  describe("query.where()", () => {
-    test("works with Payload", () => {
-      const queryString = new Query({ from: "comments" })
+describe('where methods', () => {
+  describe('query.where()', () => {
+    test('works with Payload', () => {
+      const queryString = new Query({ from: 'comments' })
         .where({ post_id: 1, user_id: 1 })
         .build();
-      expect("\n" + queryString).toBe(`
+      expect('\n' + queryString).toBe(`
 SELECT *
 FROM comments
 WHERE post_id = 1
   AND user_id = 1`);
     });
-    test("works with field and value", () => {
-      const queryString = new Query({ from: "comments" })
-        .where("content", "Hello")
+    test('works with field and value', () => {
+      const queryString = new Query({ from: 'comments' })
+        .where('content', 'Hello')
         .build();
-      expect("\n" + queryString).toBe(
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM comments
 WHERE content = 'Hello'`,
       );
     });
-    test("works with field, value and operator", () => {
-      const queryString = new Query({ from: "comments" })
-        .where("upvotes", ">", 100)
+    test('works with field, value and operator', () => {
+      const queryString = new Query({ from: 'comments' })
+        .where('upvotes', '>', 100)
         .build();
-      expect("\n" + queryString).toBe(
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM comments
@@ -311,25 +311,25 @@ WHERE upvotes > 100`,
     });
   });
 
-  describe("query.whereBetween()", () => {
-    test("works with numbers", () => {
-      const queryString = new Query({ from: "comments" })
-        .whereBetween("upvotes", [0, 10])
+  describe('query.whereBetween()', () => {
+    test('works with numbers', () => {
+      const queryString = new Query({ from: 'comments' })
+        .whereBetween('upvotes', [0, 10])
         .build();
-      expect("\n" + queryString).toBe(
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM comments
 WHERE upvotes BETWEEN 0 AND 10`,
       );
     });
-    test("works with datetimes", () => {
-      const min = DateTime.fromISO("2023-01-01T00:00:00.000+00:00", { setZone: true });
-      const max = DateTime.fromISO("2024-01-01T00:00:00.000+00:00", { setZone: true });
-      const queryString = new Query({ from: "posts" })
-        .whereBetween("created_at", [min, max])
+    test('works with datetimes', () => {
+      const min = DateTime.fromISO('2023-01-01T00:00:00.000+00:00', { setZone: true });
+      const max = DateTime.fromISO('2024-01-01T00:00:00.000+00:00', { setZone: true });
+      const queryString = new Query({ from: 'posts' })
+        .whereBetween('created_at', [min, max])
         .build();
-      expect("\n" + queryString).toBe(
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM posts
@@ -338,21 +338,21 @@ WHERE created_at BETWEEN '2023-01-01T00:00:00.000Z' AND '2024-01-01T00:00:00.000
     });
   });
 
-  describe("query.whereIn()", () => {
-    test("works with Payload", () => {
-      const queryString = new Query({ from: "users" })
-        .whereIn({ name: ["Alice", "Bob"] })
+  describe('query.whereIn()', () => {
+    test('works with Payload', () => {
+      const queryString = new Query({ from: 'users' })
+        .whereIn({ name: ['Alice', 'Bob'] })
         .build();
-      expect("\n" + queryString).toBe(
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM users
 WHERE name IN ('Alice', 'Bob')`,
       );
     });
-    test("works with field and values", () => {
-      const queryString = new Query({ from: "users" }).whereIn("id", [1, 2]).build();
-      expect("\n" + queryString).toBe(
+    test('works with field and values', () => {
+      const queryString = new Query({ from: 'users' }).whereIn('id', [1, 2]).build();
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM users
@@ -361,19 +361,19 @@ WHERE id IN (1, 2)`,
     });
   });
 
-  describe("query.whereNotIn()", () => {
-    test("works with Payload", () => {
-      const queryString = new Query({ from: "users" })
-        .whereNotIn({ name: ["Alice", "Bob"] })
+  describe('query.whereNotIn()', () => {
+    test('works with Payload', () => {
+      const queryString = new Query({ from: 'users' })
+        .whereNotIn({ name: ['Alice', 'Bob'] })
         .build();
-      expect("\n" + queryString).toBe(`
+      expect('\n' + queryString).toBe(`
 SELECT *
 FROM users
 WHERE name NOT IN ('Alice', 'Bob')`);
     });
-    test("works with field and values", () => {
-      const queryString = new Query({ from: "users" }).whereNotIn("id", [1, 2]).build();
-      expect("\n" + queryString).toBe(
+    test('works with field and values', () => {
+      const queryString = new Query({ from: 'users' }).whereNotIn('id', [1, 2]).build();
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM users
@@ -382,21 +382,21 @@ WHERE id NOT IN (1, 2)`,
     });
   });
 
-  describe("query.whereNull()", () => {
-    test("works with single field", () => {
-      const queryString = new Query({ from: "posts" }).whereNull("content").build();
-      expect("\n" + queryString).toBe(
+  describe('query.whereNull()', () => {
+    test('works with single field', () => {
+      const queryString = new Query({ from: 'posts' }).whereNull('content').build();
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM posts
 WHERE content IS NULL`,
       );
     });
-    test("works with array of fields", () => {
-      const queryString = new Query({ from: "posts" })
-        .whereNull(["created_at", "updated_at"])
+    test('works with array of fields', () => {
+      const queryString = new Query({ from: 'posts' })
+        .whereNull(['created_at', 'updated_at'])
         .build();
-      expect("\n" + queryString).toBe(`
+      expect('\n' + queryString).toBe(`
 SELECT *
 FROM posts
 WHERE created_at IS NULL
@@ -404,21 +404,21 @@ WHERE created_at IS NULL
     });
   });
 
-  describe("query.whereNotNull()", () => {
-    test("works with single field", () => {
-      const queryString = new Query({ from: "posts" }).whereNotNull("content").build();
-      expect("\n" + queryString).toBe(
+  describe('query.whereNotNull()', () => {
+    test('works with single field', () => {
+      const queryString = new Query({ from: 'posts' }).whereNotNull('content').build();
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM posts
 WHERE content IS NOT NULL`,
       );
     });
-    test("works with array of fields", () => {
-      const queryString = new Query({ from: "posts" })
-        .whereNotNull(["created_at", "updated_at"])
+    test('works with array of fields', () => {
+      const queryString = new Query({ from: 'posts' })
+        .whereNotNull(['created_at', 'updated_at'])
         .build();
-      expect("\n" + queryString).toBe(
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM posts
@@ -428,24 +428,24 @@ WHERE created_at IS NOT NULL
     });
   });
 
-  describe("query.whereRaw()", () => {
-    test("works with single clause", () => {
-      const queryString = new Query({ from: "posts" })
+  describe('query.whereRaw()', () => {
+    test('works with single clause', () => {
+      const queryString = new Query({ from: 'posts' })
         .whereRaw("created_at > NOW() - INTERVAL '1 day'")
         .build();
-      expect("\n" + queryString).toBe(`
+      expect('\n' + queryString).toBe(`
 SELECT *
 FROM posts
 WHERE created_at > NOW() - INTERVAL '1 day'`);
     });
-    test("works with array of clauses", () => {
-      const queryString = new Query({ from: "posts" })
+    test('works with array of clauses', () => {
+      const queryString = new Query({ from: 'posts' })
         .whereRaw([
           "created_at > NOW() - INTERVAL '1 day'",
           "updated_at > NOW() - INTERVAL '1 day'",
         ])
         .build();
-      expect("\n" + queryString).toBe(
+      expect('\n' + queryString).toBe(
         `
 SELECT *
 FROM posts
@@ -456,25 +456,25 @@ WHERE created_at > NOW() - INTERVAL '1 day'
   });
 });
 
-describe("query.groupBy()", () => {
-  test("works with single field", () => {
-    const queryString = new Query({ select: ["post_id", "count(*)"], from: "comments" })
-      .groupBy("post_id")
+describe('query.groupBy()', () => {
+  test('works with single field', () => {
+    const queryString = new Query({ select: ['post_id', 'count(*)'], from: 'comments' })
+      .groupBy('post_id')
       .build();
-    expect("\n" + queryString).toBe(`
+    expect('\n' + queryString).toBe(`
 SELECT post_id,
   count(*)
 FROM comments
 GROUP BY post_id`);
   });
-  test("works with array of fields", () => {
+  test('works with array of fields', () => {
     const queryString = new Query({
-      select: ["post_id", "user_id", "count(*)"],
-      from: "comments",
+      select: ['post_id', 'user_id', 'count(*)'],
+      from: 'comments',
     })
-      .groupBy(["post_id", "user_id"])
+      .groupBy(['post_id', 'user_id'])
       .build();
-    expect("\n" + queryString).toBe(
+    expect('\n' + queryString).toBe(
       `
 SELECT post_id,
   user_id,
@@ -486,16 +486,16 @@ GROUP BY post_id,
   });
 });
 
-describe("query.having()", () => {
-  test("works with single condition", () => {
+describe('query.having()', () => {
+  test('works with single condition', () => {
     const queryString = new Query({
-      select: ["post_id", "count(*)"],
-      from: "comments",
-      groupBy: "post_id",
+      select: ['post_id', 'count(*)'],
+      from: 'comments',
+      groupBy: 'post_id',
     })
-      .having("count(*) >= 10")
+      .having('count(*) >= 10')
       .build();
-    expect("\n" + queryString).toBe(
+    expect('\n' + queryString).toBe(
       `
 SELECT post_id,
   count(*)
@@ -504,15 +504,15 @@ GROUP BY post_id
 HAVING count(*) >= 10`,
     );
   });
-  test("works with array of conditions", () => {
+  test('works with array of conditions', () => {
     const queryString = new Query({
-      select: ["post_id", "count(*)"],
-      from: "comments",
-      groupBy: "post_id",
+      select: ['post_id', 'count(*)'],
+      from: 'comments',
+      groupBy: 'post_id',
     })
-      .having(["count(*) >= 10", "count(*) < 20"])
+      .having(['count(*) >= 10', 'count(*) < 20'])
       .build();
-    expect("\n" + queryString).toBe(
+    expect('\n' + queryString).toBe(
       `
 SELECT post_id,
   count(*)
@@ -524,10 +524,10 @@ HAVING count(*) >= 10,
   });
 });
 
-describe("query.orderBy()", () => {
+describe('query.orderBy()', () => {
   test("works with 'asc'", () => {
-    const queryString = new Query({ from: "users" }).orderBy("created_at", "asc").build();
-    expect("\n" + queryString).toBe(
+    const queryString = new Query({ from: 'users' }).orderBy('created_at', 'asc').build();
+    expect('\n' + queryString).toBe(
       `
 SELECT *
 FROM users
@@ -535,10 +535,10 @@ ORDER BY created_at asc`,
     );
   });
   test("works with 'desc'", () => {
-    const queryString = new Query({ from: "users" })
-      .orderBy("created_at", "desc")
+    const queryString = new Query({ from: 'users' })
+      .orderBy('created_at', 'desc')
       .build();
-    expect("\n" + queryString).toBe(
+    expect('\n' + queryString).toBe(
       `
 SELECT *
 FROM users
@@ -547,49 +547,49 @@ ORDER BY created_at desc`,
   });
 });
 
-describe("null value handling", () => {
-  describe("in join clauses", () => {
-    describe("in join methods", () => {
-      test("works with Payload", () => {
-        const queryString = new Query({ from: "users" })
-          .leftJoin("posts", { user_id: "users.id", content: null })
+describe('null value handling', () => {
+  describe('in join clauses', () => {
+    describe('in join methods', () => {
+      test('works with Payload', () => {
+        const queryString = new Query({ from: 'users' })
+          .leftJoin('posts', { user_id: 'users.id', content: null })
           .build();
-        expect("\n" + queryString).toBe(`
+        expect('\n' + queryString).toBe(`
 SELECT *
 FROM users
 LEFT JOIN posts AS p ON p.user_id = users.id AND p.content IS NULL`);
       });
     });
   });
-  describe("in where clauses", () => {
+  describe('in where clauses', () => {
     const expectedQueryString = `
 SELECT *
 FROM posts
 WHERE content IS NULL`;
 
-    describe("in the constructor", () => {
-      test("works with Payload", () => {
+    describe('in the constructor', () => {
+      test('works with Payload', () => {
         const queryString = new Query({
-          from: "posts",
+          from: 'posts',
           where: { content: null },
         }).build();
-        expect("\n" + queryString).toBe(expectedQueryString);
+        expect('\n' + queryString).toBe(expectedQueryString);
       });
     });
 
-    describe("in where methods", () => {
-      test("works with field and value", () => {
-        const queryString = new Query({ from: "posts" }).where("content", null).build();
-        expect("\n" + queryString).toBe(expectedQueryString);
+    describe('in where methods', () => {
+      test('works with field and value', () => {
+        const queryString = new Query({ from: 'posts' }).where('content', null).build();
+        expect('\n' + queryString).toBe(expectedQueryString);
       });
-      test("works with Payload", () => {
-        const queryString = new Query({ from: "posts" }).where({ content: null }).build();
-        expect("\n" + queryString).toBe(expectedQueryString);
+      test('works with Payload', () => {
+        const queryString = new Query({ from: 'posts' }).where({ content: null }).build();
+        expect('\n' + queryString).toBe(expectedQueryString);
       });
-      test("throws an error if there is an operator and the value is null", () => {
+      test('throws an error if there is an operator and the value is null', () => {
         expect(() => {
-          new Query({ from: "posts" }).where("content", "=", null);
-        }).toThrow("comparison with null");
+          new Query({ from: 'posts' }).where('content', '=', null);
+        }).toThrow('comparison with null');
       });
     });
   });

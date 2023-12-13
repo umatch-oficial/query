@@ -1,4 +1,4 @@
-import validateSQL from "./validateSQL";
+import validateSQL from './validateSQL';
 
 /**
  * Returns the table name and alias.

@@ -1,8 +1,8 @@
-import { isString } from "@umatch/utils";
+import { isString } from '@umatch/utils';
 
-import type { Value } from "./index";
+import type { Value } from './index';
 
-export type Operator = ">=" | "<=" | "!=" | ">" | "<" | "=" | "IS NULL";
+export type Operator = '>=' | '<=' | '!=' | '>' | '<' | '=' | 'IS NULL';
 
 /**
  * Returns a tuple of [operator, value], using the operator in the
@@ -16,7 +16,7 @@ export type Operator = ">=" | "<=" | "!=" | ">" | "<" | "=" | "IS NULL";
  * @throws {Error} if splitting on operators yields more than 2 parts
  */
 export default function getOperator(value: Value): [Operator | null, Value] {
-  if (value === null) return ["IS NULL", ""];
+  if (value === null) return ['IS NULL', ''];
   if (!isString(value)) return [null, value];
 
   const split = value.split(/\s*(>=|<=|!=|>|<|=)\s*/).filter(Boolean);

@@ -379,7 +379,7 @@ export class Query<Result = unknown> {
    *
    * Iterates over entries, adding one condition per entry.
    */
-  public where(conditions: Payload | OrClass): this;
+  public where(conditions: Payload | AndClass | OrClass): this;
   /**
    * Adds a 'where' condition.
    *
@@ -400,7 +400,7 @@ export class Query<Result = unknown> {
    * If given two strings and a value, uses the second string as the operator.
    */
   public where(
-    fieldOrConditions: string | Payload | OrClass,
+    fieldOrConditions: string | Payload | AndClass | OrClass,
     valueOrOperator?: Value | Operator,
     value?: Value,
   ): this {
@@ -411,7 +411,10 @@ export class Query<Result = unknown> {
           const wheres = toArray(fieldOrConditions);
           wheres.forEach((where) => this._wheres.push(where));
           return this;
-        } else if (fieldOrConditions instanceof OrClass) {
+        } else if (
+          fieldOrConditions instanceof AndClass ||
+          fieldOrConditions instanceof OrClass
+        ) {
           this._wheres.push(fieldOrConditions.toString());
           return this;
         } else {

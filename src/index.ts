@@ -1,6 +1,5 @@
 import {
   isArray,
-  isNullOrUndefined,
   isPlainObject,
   isPrimitive,
   isString,
@@ -693,12 +692,13 @@ export class Query<Result = unknown> {
   /**
    * Clears properties from the query.
    */
-  public clear(properties: OneOrArray<QueryProperty>): this {
+  public clear<T>(properties: OneOrArray<QueryProperty>): Query<T> {
     toArray(properties).forEach((prop) => {
       const [key, initializer] = propertyNamesAndInitializers[prop];
       // @ts-expect-error
       this[key] = initializer();
     });
+    // @ts-expect-error override original query result
     return this;
   }
 
@@ -707,13 +707,12 @@ export class Query<Result = unknown> {
    *
    * @param {QueryProperty[]} [exclude] Properties that should not be copied
    */
-  public clone(exclude: QueryProperty[] = []): Query {
+  public clone<T>(exclude: QueryProperty[] = []): Query<T> {
     const newQuery = new Query();
     // @ts-expect-error
     Object.entries(this).forEach(([key, value]) => (newQuery[key] = deepClone(value)));
     // remove some properties
-    newQuery.clear(exclude);
-    return newQuery;
+    return newQuery.clear<T>(exclude);
   }
 
   /**

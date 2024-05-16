@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.1.0](https://github.com/umatch-oficial/query/compare/v4.0.1...v4.1.0) (2024-05-16)
+
+
+### Features
+
+* add type parameter to Query.clear() and Query.clone() to specify return type ([6c4044c](https://github.com/umatch-oficial/query/commit/6c4044c8c49a668e3699873f2d8ec839aa316fcc))
+
 ## [4.0.1](https://github.com/umatch-oficial/query/compare/v4.0.0...v4.0.1) (2024-02-28)
 
 

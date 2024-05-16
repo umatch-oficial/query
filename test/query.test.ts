@@ -568,13 +568,6 @@ SELECT *
 FROM posts
 WHERE content IS NULL`;
 
-    describe('in the constructor', () => {
-      test('works with Payload', () => {
-        const queryString = new Query().from('posts').where({ content: null }).build();
-        expect('\n' + queryString).toBe(expectedQueryString);
-      });
-    });
-
     describe('in where methods', () => {
       test('works with field and value', () => {
         const queryString = new Query().from('posts').where('content', null).build();

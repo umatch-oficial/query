@@ -21,7 +21,7 @@
     "lib/**/*.js"
   ],
   "scripts": {
-    "build": "tsc --build src",
+    "build": "tsc -p tsconfig.build.json",
     "test": "jest",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --check --log-level warn --cache --cache-strategy metadata --config ./.prettierrc.js .",

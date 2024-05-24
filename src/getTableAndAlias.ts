@@ -1,4 +1,4 @@
-import validateSQL from './validateSQL';
+import { validateSQL } from './validateSQL';
 
 /**
  * Returns the table name and alias.
@@ -6,7 +6,7 @@ import validateSQL from './validateSQL';
  * If there isn't already an alias for the table, makes one out of
  * the table name using the makeAlias function.
  *
- * Validates strings using [validateSQL()]{@link import('./validateSQL').default}.
+ * Validates strings using [validateSQL()]{@link import('./validateSQL').validateSQL}.
  *
  * @param tableString A string that contains the name of a table and optionally an alias for it.
  * @param makeAlias A function that makes an alias out of a table's name. Default: first letter.
@@ -21,7 +21,7 @@ import validateSQL from './validateSQL';
  * // ['users', 'use']
  * getTableAndAlias('users', (name: string) => name.slice(0, 3))
  */
-export default function getTableAndAlias(
+export function getTableAndAlias(
   tableString: string,
   makeAlias: (name: string) => string = (name: string) => name[0],
 ): [string, string] {

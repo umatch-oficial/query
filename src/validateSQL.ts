@@ -27,7 +27,7 @@ const KEYWORDS = [
  *
  * @throws {Error} if the string contains any potential SQL vulnerability exploits.
  */
-export default function validateSQL<S extends string>(string: S): S {
+export function validateSQL<S extends string>(string: S): S {
   const str = string.toLowerCase();
   const errMessage = 'Potential SQL injection vulnerability';
   if (OTHER.some((other) => str.includes(other))) throw new Error(errMessage);

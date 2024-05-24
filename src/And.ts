@@ -1,7 +1,7 @@
-import entryToString from './entryToString';
-import Or from './Or';
-import RawValue from './RawValue';
-import validateSQL from './validateSQL';
+import { entryToString } from './entryToString';
+import { Or } from './Or';
+import { RawValue } from './RawValue';
+import { validateSQL } from './validateSQL';
 
 import type { Payload } from './index';
 
@@ -10,13 +10,13 @@ export type AndCondition = string | Payload | Or | RawValue;
 /**
  * Class used to represent AND conditions.
  */
-export default class And {
+export class And {
   constructor(public conditions: ReadonlyArray<AndCondition>) {}
 
   /**
    * Returns the string representation of the AND conditions.
    *
-   * Validates strings using [validateSQL()]{@link import('./validateSQL').default}.
+   * Validates strings using [validateSQL()]{@link import('./validateSQL').validateSQL}.
    */
   public toString(alias?: string): string {
     return (

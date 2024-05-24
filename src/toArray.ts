@@ -1,4 +1,4 @@
-import entryToString from './entryToString';
+import { entryToString } from './entryToString';
 
 import type { JoinPayload, Payload, Value } from './index';
 import type { Dictionary, OneOrArray } from '@umatch/utils';
@@ -6,14 +6,14 @@ import type { Dictionary, OneOrArray } from '@umatch/utils';
 /**
  * Converts conditions to arrays.
  *
- * If they are an object, also transforms the values using [toSQLValue()]{@link import('./toSQLValue').default}.
+ * If they are an object, also transforms the values using [toSQLValue()]{@link import('./toSQLValue').toSQLValue}.
  *
  * @example
  * string     => [string]
  * [string]   => [string]
  * { id: 1 }  => ['id = 1']
  */
-function toArray<T extends Payload | JoinPayload | OneOrArray<Value>>(
+export function toArray<T extends Payload | JoinPayload | OneOrArray<Value>>(
   x?: T,
   entriesCallback?: (entry: [string, unknown]) => string,
 ): T extends null | undefined
@@ -26,14 +26,14 @@ function toArray<T extends Payload | JoinPayload | OneOrArray<Value>>(
 /**
  * Converts conditions to arrays.
  *
- * If they are an object, also transforms the values using [toSQLValue()]{@link import('./toSQLValue').default}.
+ * If they are an object, also transforms the values using [toSQLValue()]{@link import('./toSQLValue').toSQLValue}.
  *
  * @example
  * string     => [string]
  * [string]   => [string]
  * { id: 1 }  => ['id = 1']
  */
-function toArray(
+export function toArray(
   x?: Payload | JoinPayload | OneOrArray<Value>,
   entriesCallback: (entry: [string, unknown]) => string = entryToString(),
 ): readonly unknown[] {
@@ -48,5 +48,3 @@ function toArray(
       return Object.entries(x).map(entriesCallback);
   }
 }
-
-export default toArray;

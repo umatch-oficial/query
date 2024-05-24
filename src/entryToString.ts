@@ -2,9 +2,9 @@
 import { isPrimitive, type Primitive } from '@umatch/utils';
 import { joinNonEmpty } from '@umatch/utils/string';
 
-import getOperator from './getOperator';
-import OrClass from './Or';
-import toSQLValue from './toSQLValue';
+import { getOperator } from './getOperator';
+import { Or as OrClass } from './Or';
+import { toSQLValue } from './toSQLValue';
 
 import type { Value } from './index';
 
@@ -22,7 +22,7 @@ import type { Value } from './index';
  * @throws {Error} if any value isn't a [Value]{@link Value} or an [Or]{@link OrClass}.
  * @throws {Error} if transform is false and any value isn't a [Primitive]{@link Primitive} or an [Or]{@link OrClass}.
  */
-export default function entryToString(
+export function entryToString(
   transform: boolean = true,
   alias?: string,
 ): (entry: [string, unknown]) => string {

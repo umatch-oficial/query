@@ -15,7 +15,7 @@ export type Operator = '>=' | '<=' | '!=' | '>' | '<' | '=' | 'IS NULL';
  * 'a > 3' => Error
  * @throws {Error} if splitting on operators yields more than 2 parts
  */
-export default function getOperator(value: Value): [Operator | null, Value] {
+export function getOperator(value: Value): [Operator | null, Value] {
   if (value === null) return ['IS NULL', ''];
   if (!isString(value)) return [null, value];
 

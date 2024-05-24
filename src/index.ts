@@ -10,14 +10,14 @@ import {
 import { deepClone } from '@umatch/utils/object';
 import { joinNonEmpty } from '@umatch/utils/string';
 
-import AndClass, { type AndCondition } from './And';
-import entryToString from './entryToString';
-import getTableAndAlias from './getTableAndAlias';
-import OrClass, { type OrCondition } from './Or';
-import RawValue from './RawValue';
-import toArray from './toArray';
-import toSQLValue from './toSQLValue';
-import validateSQL from './validateSQL';
+import { And as AndClass, type AndCondition } from './And';
+import { entryToString } from './entryToString';
+import { getTableAndAlias } from './getTableAndAlias';
+import { Or as OrClass, type OrCondition } from './Or';
+import { RawValue } from './RawValue';
+import { toArray } from './toArray';
+import { toSQLValue } from './toSQLValue';
+import { validateSQL } from './validateSQL';
 
 import type { Operator } from './getOperator';
 import type { DateTime } from 'luxon';

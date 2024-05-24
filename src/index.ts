@@ -289,7 +289,7 @@ export class Query<Result = unknown> {
     let joinTable: string;
     if (isString(table)) {
       [tableName, tableAlias] = getTableAndAlias(table);
-      joinTable = `${tableName} AS ${tableAlias}`;
+      joinTable = tableAlias === tableName ? tableName : `${tableName} AS ${tableAlias}`;
     } else {
       tableAlias = table._alias;
       joinTable = Query._parseSubquery(table);

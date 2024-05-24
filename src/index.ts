@@ -206,7 +206,7 @@ export class Query<Result = unknown> {
       _alias = alias ?? propertyNamesAndInitializers['alias'][1];
       _query = query;
     } else {
-      _alias = query._alias;
+      _alias = alias ?? query._alias;
       _query = query.build();
     }
     this._withs.push(`${_alias} AS (\n${_query}\n)`);

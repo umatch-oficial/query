@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [4.2.0](https://github.com/umatch-oficial/query/compare/v4.1.0...v4.2.0) (2024-05-24)
+
+
+### Features
+
+* omit 'AS alias' in joins if the alias is equal to the table name ([56634a5](https://github.com/umatch-oficial/query/commit/56634a5a1e4076ad17ce4c3e1b30fdd4e4069dcf))
+* override subquery's alias if a new one is passed to Query.with() ([9c24efc](https://github.com/umatch-oficial/query/commit/9c24efcbfefb832c9dada459b17a082b523b266b))
+
 ## [4.1.0](https://github.com/umatch-oficial/query/compare/v4.0.1...v4.1.0) (2024-05-16)
 
 

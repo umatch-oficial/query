@@ -12,7 +12,6 @@ import { joinNonEmpty } from '@umatch/utils/string';
 
 import { And as AndClass, type AndCondition } from './And';
 import { entryToString } from './entryToString';
-import { getTableAndAlias } from './getTableAndAlias';
 import { Or as OrClass, type OrCondition } from './Or';
 import { RawValue } from './RawValue';
 import { toArray } from './toArray';
@@ -143,8 +142,6 @@ export class Query<Result = unknown> {
   private static _formatSubQuery(query: Query | string): string {
     return `(\n${isString(query) ? query : query.build()}\n)`;
   }
-
-  public static getTableAndAlias = getTableAndAlias;
 
   /**
    * Returns an object used to represent AND conditions.
@@ -298,8 +295,21 @@ export class Query<Result = unknown> {
     let tableName: string;
     let joinTable: string;
     if (isString(table)) {
-      [tableName, tableAlias] = getTableAndAlias(table);
-      joinTable = tableAlias === tableName ? tableName : `${tableName} AS ${tableAlias}`;
+      validateSQL(table);
+
+      const tableSplit = table.split(/ (as )?/i);
+      tableName = tableSplit[0];
+      tableAlias = tableSplit[2];
+      if (tableAlias) {
+        joinTable = `${tableName} AS ${tableAlias}`;
+      } else {
+        tableAlias = Query._getAlias(tableName);
+        if (tableAlias !== tableName) {
+          joinTable = `${tableName} AS ${tableAlias}`;
+        } else {
+          joinTable = tableName;
+        }
+      }
     } else {
       tableAlias = table._alias;
       joinTable = `${Query._formatSubQuery(table)} AS ${table._alias}`;
@@ -776,15 +786,35 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * The method that is used to run queries.
+   * Returns the alias for a table.
+   *
+   * The default alias is the first letter of each word in the table
+   * name, assuming it is in snake_case.
+   */
+  private static _getAlias = (table: string): string => {
+    return table
+      .split('_')
+      .map((word) => word[0])
+      .join('');
+  };
+
+  /**
+   * A callback that is used to run queries.
    */
   private static _run?: (query: string) => Promise<unknown>;
 
   /**
-   * Sets the method, that will be used to run queries.
+   * Sets static properties.
    */
-  public static init(func: (query: string) => Promise<unknown>): void {
-    Query._run = func;
+  public static init({
+    getAlias,
+    run,
+  }: {
+    getAlias?: (table: string) => string;
+    run: (query: string) => Promise<unknown>;
+  }): void {
+    if (getAlias) Query._getAlias = getAlias;
+    Query._run = run;
   }
 
   /**

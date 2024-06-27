@@ -55,7 +55,7 @@ describe('Query class', () => {
   });
   test('can be initialized', async () => {
     let queryString;
-    Query.init(async (query: string) => (queryString = query));
+    Query.init({ run: async (query: string) => (queryString = query) });
     await new Query().from('users').run();
     expect('\n' + queryString).toBe(
       `
@@ -65,7 +65,7 @@ FROM users`,
   });
   test("throws an error if it hasn't been initialized", async () => {
     // @ts-expect-error
-    Query.init(undefined);
+    Query.init({});
     await expect(() => new Query().from('users').run()).rejects.toThrow('Cannot run');
   });
   test("throws an error if there is no 'from' clause", () => {
@@ -196,6 +196,27 @@ FROM users
     const subQuery = new Query().from('users').alias('q');
     const queryString = new Query().from(subQuery).build();
     expect('\n' + queryString).toBe(expectedQueryString);
+  });
+  test('Query._getAlias()', () => {
+    // @ts-expect-error
+    const getAlias = Query._getAlias;
+    // @ts-expect-error
+    expect(Query._getAlias('translations_tags')).toBe('tt');
+    Query.init({
+      getAlias: (table: string) =>
+        table
+          .split('_')
+          .map((word) => word.slice(0, 2))
+          .join(''),
+      run: async () => {},
+    });
+
+    // @ts-expect-error
+    expect(Query._getAlias('translations_tags')).toBe('trta');
+    Query.init({
+      getAlias,
+      run: async () => {},
+    });
   });
 });
 

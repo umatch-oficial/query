@@ -140,8 +140,8 @@ export class Query<Result = unknown> {
   /**
    * Returns the query as a string to use inside another query.
    */
-  private static _parseSubquery(query: Query): string {
-    return `(\n${query.build()}\n) AS ${query._alias}`;
+  private static _formatSubQuery(query: Query | string): string {
+    return `(\n${isString(query) ? query : query.build()}\n)`;
   }
 
   public static getTableAndAlias = getTableAndAlias;
@@ -200,15 +200,12 @@ export class Query<Result = unknown> {
    */
   public with(query: string | Query, alias?: string): this {
     let _alias;
-    let _query;
     if (isString(query)) {
       _alias = alias ?? propertyNamesAndInitializers['alias'][1];
-      _query = query;
     } else {
       _alias = alias ?? query._alias;
-      _query = query.build();
     }
-    this._withs.push(`${_alias} AS (\n${_query}\n)`);
+    this._withs.push(`${_alias} AS ${Query._formatSubQuery(query)}`);
     return this;
   }
 
@@ -254,7 +251,9 @@ export class Query<Result = unknown> {
    */
   public from(from: string | Query): this {
     if (this._from) throw new Error("Query already has 'from'");
-    this._from = isString(from) ? validateSQL(from) : Query._parseSubquery(from);
+    this._from = isString(from)
+      ? validateSQL(from)
+      : `${Query._formatSubQuery(from)} AS ${from._alias}`;
     return this;
   }
 
@@ -291,7 +290,7 @@ export class Query<Result = unknown> {
       joinTable = tableAlias === tableName ? tableName : `${tableName} AS ${tableAlias}`;
     } else {
       tableAlias = table._alias;
-      joinTable = Query._parseSubquery(table);
+      joinTable = `${Query._formatSubQuery(table)} AS ${table._alias}`;
     }
 
     let ons: readonly string[];

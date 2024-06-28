@@ -17,6 +17,7 @@ declare module '../src' {
   - updated_at
   - name
   - deleted_at
+  - tag_ids
  2. posts
   - id
   - created_at
@@ -385,6 +386,36 @@ WHERE upvotes BETWEEN 0 AND 10`,
 SELECT *
 FROM posts
 WHERE created_at BETWEEN '2023-01-01T00:00:00.000Z' AND '2024-01-01T00:00:00.000Z'`,
+      );
+    });
+  });
+
+  describe('query.whereContains()', () => {
+    test('works with field and values', () => {
+      const queryString = new Query()
+        .from('users')
+        .whereContains('tag_ids', [1, 2, 3])
+        .build();
+      expect('\n' + queryString).toBe(
+        `
+SELECT *
+FROM users
+WHERE tag_ids @> ARRAY[1, 2, 3]`,
+      );
+    });
+  });
+
+  describe('query.whereContainedIn()', () => {
+    test('works with field and values', () => {
+      const queryString = new Query()
+        .from('users')
+        .whereContainedIn('tag_ids', [1, 2, 3])
+        .build();
+      expect('\n' + queryString).toBe(
+        `
+SELECT *
+FROM users
+WHERE tag_ids <@ ARRAY[1, 2, 3]`,
       );
     });
   });

@@ -439,6 +439,24 @@ export class Query<Result = unknown> {
   }
 
   /**
+   * Adds a 'where field @> values' condition.
+   */
+  public whereContains(field: string, values: Array<Value>): this {
+    validateSQL(field);
+    this._wheres.push(`${field} @> ARRAY[${values.map(toSQLValue).join(', ')}]`);
+    return this;
+  }
+
+  /**
+   * Adds a 'where field <@ values' condition.
+   */
+  public whereContainedIn(field: string, values: Array<Value>): this {
+    validateSQL(field);
+    this._wheres.push(`${field} <@ ARRAY[${values.map(toSQLValue).join(', ')}]`);
+    return this;
+  }
+
+  /**
    * Adds a 'where in' condition.
    *
    * Transforms arrays of values using [toSQLValue()]{@link toSQLValue}.

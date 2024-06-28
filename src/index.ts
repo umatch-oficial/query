@@ -574,20 +574,20 @@ export class Query<Result = unknown> {
    *
    * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
-  public whereRaw(clause: string): this;
+  public whereRaw(predicate: string): this;
   /**
    * Adds 'where' conditions without transforming values.
    *
    * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
-  public whereRaw(clauses: string[]): this;
+  public whereRaw(predicates: string[]): this;
   /**
    * Adds one or more 'where' conditions without transforming values.
    *
    * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
-  public whereRaw(clauses: OneOrArray<string>): this {
-    const wheres = toArray(clauses);
+  public whereRaw(predicates: OneOrArray<string>): this {
+    const wheres = toArray(predicates);
     wheres.forEach((where) => this._wheres.push(where));
     return this;
   }
@@ -636,12 +636,12 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Adds an 'order by' clause without validating the input.
+   * Adds an 'order by' expression without validating the input.
    *
    * **Warning**: this method does not validate against SQL injection attacks. Be careful to properly escape any user inputs using [Query.validate]{@link Query.validate} or another method of your choice.
    */
-  public orderByRaw(clause: string): this {
-    this._orders.push(clause);
+  public orderByRaw(expression: string): this {
+    this._orders.push(expression);
     return this;
   }
 
@@ -716,9 +716,7 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Joins an array of clause parts using the specified separator (or uses a single
-   * provided clause) and adds the clause name to the beginning, returning a final
-   * string that can be used in a query.
+   * Formats an array of predicates into a complete clause.
    *
    * @example
    * // returns ''
@@ -728,8 +726,8 @@ export class Query<Result = unknown> {
    * // returns 'WHERE a = 1 AND b = 2'
    * this._buildClauseString(['a = 1', 'b = 2'], 'WHERE', ' AND ')
    */
-  private _buildClauseString(
-    conditions: (string | number)[] | undefined,
+  private _formatClause(
+    conditions: (string | number | null | undefined)[] | undefined,
     name: string,
     separator: string = ',\n  ',
   ): string {
@@ -749,14 +747,14 @@ export class Query<Result = unknown> {
 
     return joinNonEmpty(
       [
-        this._buildClauseString(this._withs, 'WITH', ',\n'),
+        this._formatClause(this._withs, 'WITH', ',\n'),
         `SELECT ${this._selects?.join(',\n  ') || '*'}`,
         `FROM ${this._from}`,
-        this._buildClauseString(this._joins, '', '\n'),
-        this._buildClauseString(this._wheres, 'WHERE', '\n  AND '),
-        this._buildClauseString(this._groups, 'GROUP BY'),
-        this._buildClauseString(this._havings, 'HAVING'),
-        this._buildClauseString(this._orders, 'ORDER BY'),
+        this._formatClause(this._joins, '', '\n'),
+        this._formatClause(this._wheres, 'WHERE', '\n  AND '),
+        this._formatClause(this._groups, 'GROUP BY'),
+        this._formatClause(this._havings, 'HAVING'),
+        this._formatClause(this._orders, 'ORDER BY'),
         this._limit ? `LIMIT ${this._limit}` : '',
         this._offset ? `OFFSET ${this._offset}` : '',
       ],

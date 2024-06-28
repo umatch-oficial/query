@@ -237,23 +237,35 @@ export class Query<Result = unknown> {
    *
    * @throws {Error} if the table has already been set
    */
-  public from(table: string): this;
+  public from(table: string, alias?: string): this;
   /**
    * Sets the 'from' table.
    *
    * @throws {Error} if the table has already been set
    */
-  public from(query: Query): this;
+  public from(query: Query, alias?: string): this;
   /**
    * Sets the 'from' table.
    *
    * @throws {Error} if the table has already been set
    */
-  public from(from: string | Query): this {
+  public from(from: string | Query, alias?: string): this {
     if (this._from) throw new Error("Query already has 'from'");
-    this._from = isString(from)
-      ? validateSQL(from)
-      : `${Query._formatSubQuery(from)} AS ${from._alias}`;
+
+    if (isString(from)) {
+      validateSQL(from);
+
+      const tableSplit = from.split(/ (as )?/i);
+      const tableName = tableSplit[0];
+      const tableAlias = alias ?? tableSplit[2];
+      if (tableAlias && tableAlias !== tableName) {
+        this._from = `${tableName} AS ${tableAlias}`;
+      } else {
+        this._from = tableName;
+      }
+    } else {
+      this._from = `${Query._formatSubQuery(from)} AS ${alias ?? from._alias}`;
+    }
     return this;
   }
 

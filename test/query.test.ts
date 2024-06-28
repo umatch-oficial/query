@@ -127,6 +127,22 @@ SELECT *
 FROM users`,
     );
   });
+  test('works with string and alias', () => {
+    const queryString = new Query().from('users', 'u2').build();
+    expect('\n' + queryString).toBe(
+      `
+SELECT *
+FROM users AS u2`,
+    );
+  });
+  test('overrides alias', () => {
+    const queryString = new Query().from('users u', 'u2').build();
+    expect('\n' + queryString).toBe(
+      `
+SELECT *
+FROM users AS u2`,
+    );
+  });
   test('works with Query', () => {
     const subQuery = new Query()
       .select('CASE WHEN upvotes > downvotes THEN 1 ELSE 0 END as has_positive_karma')
@@ -142,6 +158,23 @@ FROM (
 SELECT CASE WHEN upvotes > downvotes THEN 1 ELSE 0 END as has_positive_karma
 FROM posts
 ) AS sub`,
+    );
+  });
+  test('works with Query and alias', () => {
+    const subQuery = new Query()
+      .select('CASE WHEN upvotes > downvotes THEN 1 ELSE 0 END as has_positive_karma')
+      .from('posts');
+    const queryString = new Query()
+      .select('sum(has_positive_karma)/count(*) as positive_karma_ratio')
+      .from(subQuery, 'q')
+      .build();
+    expect('\n' + queryString).toBe(
+      `
+SELECT sum(has_positive_karma)/count(*) as positive_karma_ratio
+FROM (
+SELECT CASE WHEN upvotes > downvotes THEN 1 ELSE 0 END as has_positive_karma
+FROM posts
+) AS q`,
     );
   });
 });

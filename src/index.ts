@@ -482,74 +482,26 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Adds 'where in' conditions.
-   *
-   * Iterates over entries, adding one condition per entry.
-   */
-  public whereIn(conditions: Dictionary<Array<Value> | RawValue>): this;
-  /**
    * Adds a 'where in' condition.
    *
    * Transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
-  public whereIn(field: string, values: Array<Value> | RawValue): this;
-  /**
-   * Adds one or more 'where in' conditions.
-   *
-   * If given a dictionary, iterates over entries, adding one condition per entry.<br>
-   * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
-   */
-  public whereIn(
-    fieldOrConditions: string | Dictionary<Array<Value> | RawValue>,
-    values?: Array<Value> | RawValue,
-  ): this {
-    if (values) {
-      if (!isString(fieldOrConditions)) throw new Error('field must be a string');
-      validateSQL(fieldOrConditions);
-      this._wheres.push(`${fieldOrConditions} IN ${toSQLValue(values)}`);
-    } else {
-      if (isString(fieldOrConditions)) throw new Error('Missing values');
-      Object.entries(fieldOrConditions).forEach(
-        ([field, vals]) => this.whereIn(field, vals),
-        this,
-      );
-    }
+  public whereIn(field: string, values: Array<Value> | RawValue): this {
+    if (!isString(field)) throw new Error('field must be a string');
+    validateSQL(field);
+    this._wheres.push(`${field} IN ${toSQLValue(values)}`);
     return this;
   }
 
-  /**
-   * Adds 'where not in' conditions.
-   *
-   * Iterates over entries, adding one condition per entry.
-   */
-  public whereNotIn(condition: Dictionary<Array<Value> | RawValue>): this;
   /**
    * Adds a 'where not in' condition.
    *
    * Transforms the array of values using [toSQLValue()]{@link toSQLValue}.
    */
-  public whereNotIn(field: string, values: Array<Value> | RawValue): this;
-  /**
-   * Adds one or more 'where not in' conditions.
-   *
-   * If given a dictionary, iterates over entries, adding one condition per entry.<br>
-   * If given a string and an array, transforms the array of values using [toSQLValue()]{@link toSQLValue}.
-   */
-  public whereNotIn(
-    fieldOrConditions: string | Dictionary<Array<Value> | RawValue>,
-    values?: Array<Value> | RawValue,
-  ): this {
-    if (values) {
-      if (!isString(fieldOrConditions)) throw new Error('field must be a string');
-      validateSQL(fieldOrConditions);
-      this._wheres.push(`${fieldOrConditions} NOT IN ${toSQLValue(values)}`);
-    } else {
-      if (isString(fieldOrConditions)) throw new Error('Missing values');
-      Object.entries(fieldOrConditions).forEach(
-        ([field, vals]) => this.whereNotIn(field, vals),
-        this,
-      );
-    }
+  public whereNotIn(field: string, values: Array<Value> | RawValue): this {
+    if (!isString(field)) throw new Error('field must be a string');
+    validateSQL(field);
+    this._wheres.push(`${field} NOT IN ${toSQLValue(values)}`);
     return this;
   }
 

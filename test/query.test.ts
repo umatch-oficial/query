@@ -390,18 +390,6 @@ WHERE created_at BETWEEN '2023-01-01T00:00:00.000Z' AND '2024-01-01T00:00:00.000
   });
 
   describe('query.whereIn()', () => {
-    test('works with Payload', () => {
-      const queryString = new Query()
-        .from('users')
-        .whereIn({ name: ['Alice', 'Bob'] })
-        .build();
-      expect('\n' + queryString).toBe(
-        `
-SELECT *
-FROM users
-WHERE name IN ('Alice', 'Bob')`,
-      );
-    });
     test('works with field and values', () => {
       const queryString = new Query().from('users').whereIn('id', [1, 2]).build();
       expect('\n' + queryString).toBe(
@@ -414,16 +402,6 @@ WHERE id IN (1, 2)`,
   });
 
   describe('query.whereNotIn()', () => {
-    test('works with Payload', () => {
-      const queryString = new Query()
-        .from('users')
-        .whereNotIn({ name: ['Alice', 'Bob'] })
-        .build();
-      expect('\n' + queryString).toBe(`
-SELECT *
-FROM users
-WHERE name NOT IN ('Alice', 'Bob')`);
-    });
     test('works with field and values', () => {
       const queryString = new Query().from('users').whereNotIn('id', [1, 2]).build();
       expect('\n' + queryString).toBe(

@@ -556,6 +556,41 @@ WHERE created_at > NOW() - INTERVAL '1 day'
   });
 });
 
+describe('query.with()', () => {
+  test('works with string', () => {
+    const queryString = new Query().with('SELECT *\nFROM users').from('sub').build();
+    expect('\n' + queryString).toBe(`
+WITH sub AS (
+SELECT *
+FROM users
+)
+SELECT *
+FROM sub`);
+  });
+  test('works with subquery', () => {
+    const subquery = new Query().from('users');
+    const queryString = new Query().with(subquery).from('sub').build();
+    expect('\n' + queryString).toBe(`
+WITH sub AS (
+SELECT *
+FROM users
+)
+SELECT *
+FROM sub`);
+  });
+  test('accepts an alias', () => {
+    const subquery = new Query().from('users');
+    const queryString = new Query().with(subquery, 'q').from('q').build();
+    expect('\n' + queryString).toBe(`
+WITH q AS (
+SELECT *
+FROM users
+)
+SELECT *
+FROM q`);
+  });
+});
+
 describe('query.groupBy()', () => {
   test('works with single field', () => {
     const queryString = new Query()

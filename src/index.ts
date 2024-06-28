@@ -200,7 +200,7 @@ export class Query<Result = unknown> {
   public with(query: string | Query, alias?: string): this {
     let _alias;
     if (isString(query)) {
-      _alias = alias ?? propertyNamesAndInitializers['alias'][1];
+      _alias = alias ?? propertyNamesAndInitializers['alias'][1]();
     } else {
       _alias = alias ?? query._alias;
     }

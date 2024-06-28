@@ -744,19 +744,22 @@ export class Query<Result = unknown> {
     if (this._havings.length > 0 && this._groups.length === 0) {
       throw new Error("Cannot build query with 'having', but missing 'group by'");
     }
+    if (!this._selects.length) {
+      this._selects.push('*');
+    }
 
     return joinNonEmpty(
       [
         this._formatClause(this._withs, 'WITH', ',\n'),
-        `SELECT ${this._selects?.join(',\n  ') || '*'}`,
-        `FROM ${this._from}`,
-        this._formatClause(this._joins, '', '\n'),
+        this._formatClause(this._selects, 'SELECT', ',\n  '),
+        this._formatClause([this._from], 'FROM'),
+        ...this._joins,
         this._formatClause(this._wheres, 'WHERE', '\n  AND '),
         this._formatClause(this._groups, 'GROUP BY'),
         this._formatClause(this._havings, 'HAVING'),
         this._formatClause(this._orders, 'ORDER BY'),
-        this._limit ? `LIMIT ${this._limit}` : '',
-        this._offset ? `OFFSET ${this._offset}` : '',
+        this._formatClause([this._limit], 'LIMIT'),
+        this._formatClause([this._offset], 'OFFSET'),
       ],
       '\n',
     );

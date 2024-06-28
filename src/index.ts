@@ -123,6 +123,10 @@ export class Query<Result = unknown> {
   private _limit?: number;
   private _offset?: number;
   private _trx?: any;
+  /**
+   * A callback that is used to run queries.
+   */
+  private static _run?: (query: string) => Promise<unknown>;
 
   constructor() {
     this._withs = propertyNamesAndInitializers['with'][1]();
@@ -134,13 +138,6 @@ export class Query<Result = unknown> {
     this._groups = propertyNamesAndInitializers['groupBy'][1]();
     this._havings = propertyNamesAndInitializers['having'][1]();
     this._orders = propertyNamesAndInitializers['orderBy'][1]();
-  }
-
-  /**
-   * Returns the query as a string to use inside another query.
-   */
-  private static _formatSubQuery(query: Query | string): string {
-    return `(\n${isString(query) ? query : query.build()}\n)`;
   }
 
   /**
@@ -279,51 +276,6 @@ export class Query<Result = unknown> {
    */
   public as(alias: string): this {
     return this.alias(alias);
-  }
-
-  /**
-   * Adds a join clause.
-   *
-   * If 'table' is a Query, it is parsed to a subquery string.
-   */
-  private _join(
-    joinType: 'LEFT' | 'INNER' | 'OUTER',
-    table: string | Query,
-    on: readonly string[] | JoinPayload,
-  ): void {
-    let tableAlias: string;
-    let tableName: string;
-    let joinTable: string;
-    if (isString(table)) {
-      validateSQL(table);
-
-      const tableSplit = table.split(/ (as )?/i);
-      tableName = tableSplit[0];
-      tableAlias = tableSplit[2];
-      if (tableAlias) {
-        joinTable = `${tableName} AS ${tableAlias}`;
-      } else {
-        tableAlias = Query._getAlias(tableName);
-        if (tableAlias !== tableName) {
-          joinTable = `${tableName} AS ${tableAlias}`;
-        } else {
-          joinTable = tableName;
-        }
-      }
-    } else {
-      tableAlias = table._alias;
-      joinTable = `${Query._formatSubQuery(table)} AS ${table._alias}`;
-    }
-
-    let ons: readonly string[];
-    if (isArray(on)) {
-      ons = on.map(validateSQL);
-    } else {
-      ons = toArray(on, entryToString(false, tableAlias));
-    }
-
-    const clause = `${joinType} JOIN ${joinTable} ON ${ons.join(' AND ')}`;
-    this._joins.push(clause);
   }
 
   /**
@@ -696,27 +648,6 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Formats an array of predicates into a complete clause.
-   *
-   * @example
-   * // returns ''
-   * this._buildClauseString([], 'WHERE', ' AND ')
-   * // returns 'WHERE a = 1'
-   * this._buildClauseString(['a = 1'], 'WHERE', ' AND ')
-   * // returns 'WHERE a = 1 AND b = 2'
-   * this._buildClauseString(['a = 1', 'b = 2'], 'WHERE', ' AND ')
-   */
-  private _formatClause(
-    conditions: (string | number | null | undefined)[] | undefined,
-    name: string,
-    separator: string = ',\n  ',
-  ): string {
-    const joinedConditions = joinNonEmpty(conditions, separator);
-    if (!joinedConditions) return '';
-    return joinNonEmpty([name, joinedConditions], ' ');
-  }
-
-  /**
    * Returns the final query.
    */
   public build(): string {
@@ -746,22 +677,16 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Returns the alias for a table.
+   * Builds and runs the query, returning the result.
    *
-   * The default alias is the first letter of each word in the table
-   * name, assuming it is in snake_case.
+   * @throws {Error} if the 'init' method hasn't been called
    */
-  private static _getAlias = (table: string): string => {
-    return table
-      .split('_')
-      .map((word) => word[0])
-      .join('');
-  };
+  public async run(): Promise<Result[]> {
+    if (!Query._run) throw new Error('Cannot run without executing Query.init()');
 
-  /**
-   * A callback that is used to run queries.
-   */
-  private static _run?: (query: string) => Promise<unknown>;
+    const query = this.build();
+    return (await Query._run(query)) as Promise<Result[]>;
+  }
 
   /**
    * Sets static properties.
@@ -778,14 +703,88 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Builds and runs the query, returning the result.
-   *
-   * @throws {Error} if the 'init' method hasn't been called
+   * Returns the query as a string to use inside another query.
    */
-  public async run(): Promise<Result[]> {
-    if (!Query._run) throw new Error('Cannot run without executing Query.init()');
+  private static _formatSubQuery(query: Query | string): string {
+    return `(\n${isString(query) ? query : query.build()}\n)`;
+  }
 
-    const query = this.build();
-    return (await Query._run(query)) as Promise<Result[]>;
+  /**
+   * Returns the alias for a table.
+   *
+   * The default alias is the first letter of each word in the table
+   * name, assuming it is in snake_case.
+   */
+  private static _getAlias = (table: string): string => {
+    return table
+      .split('_')
+      .map((word) => word[0])
+      .join('');
+  };
+
+  /**
+   * Adds a join clause.
+   *
+   * If 'table' is a Query, it is parsed to a subquery string.
+   */
+  private _join(
+    joinType: 'LEFT' | 'INNER' | 'OUTER',
+    table: string | Query,
+    on: readonly string[] | JoinPayload,
+  ): void {
+    let tableAlias: string;
+    let tableName: string;
+    let joinTable: string;
+    if (isString(table)) {
+      validateSQL(table);
+
+      const tableSplit = table.split(/ (as )?/i);
+      tableName = tableSplit[0];
+      tableAlias = tableSplit[2];
+      if (tableAlias) {
+        joinTable = `${tableName} AS ${tableAlias}`;
+      } else {
+        tableAlias = Query._getAlias(tableName);
+        if (tableAlias !== tableName) {
+          joinTable = `${tableName} AS ${tableAlias}`;
+        } else {
+          joinTable = tableName;
+        }
+      }
+    } else {
+      tableAlias = table._alias;
+      joinTable = `${Query._formatSubQuery(table)} AS ${table._alias}`;
+    }
+
+    let ons: readonly string[];
+    if (isArray(on)) {
+      ons = on.map(validateSQL);
+    } else {
+      ons = toArray(on, entryToString(false, tableAlias));
+    }
+
+    const clause = `${joinType} JOIN ${joinTable} ON ${ons.join(' AND ')}`;
+    this._joins.push(clause);
+  }
+
+  /**
+   * Formats an array of predicates into a complete clause.
+   *
+   * @example
+   * // returns ''
+   * this._buildClauseString([], 'WHERE', ' AND ')
+   * // returns 'WHERE a = 1'
+   * this._buildClauseString(['a = 1'], 'WHERE', ' AND ')
+   * // returns 'WHERE a = 1 AND b = 2'
+   * this._buildClauseString(['a = 1', 'b = 2'], 'WHERE', ' AND ')
+   */
+  private _formatClause(
+    conditions: (string | number | null | undefined)[] | undefined,
+    name: string,
+    separator: string = ',\n  ',
+  ): string {
+    const joinedConditions = joinNonEmpty(conditions, separator);
+    if (!joinedConditions) return '';
+    return joinNonEmpty([name, joinedConditions], ' ');
   }
 }

@@ -143,6 +143,11 @@ export class Query<Result = unknown> {
   /**
    * Returns an object used to represent AND conditions.
    *
+   * PS: conditions are validated against SQL injection attacks. This
+   * means that you cannot pass conditions including the 'OR' keyword.
+   * To pass conditions including 'OR', use [Query.or]{@link Query.or}.
+   * Alternatively, you can use [Query.raw]{@link Query.raw} to pass raw SQL.
+   *
    * @example
    * query.where(Query.or(["expiration IS NULL", Query.and(["expiration > NOW()", "created_at > NOW() - INTERVAL '1 day'"])]))
    */

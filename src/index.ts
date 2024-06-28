@@ -484,24 +484,32 @@ export class Query<Result = unknown> {
   /**
    * Adds a 'where in' condition.
    *
-   * Transforms the array of values using [toSQLValue()]{@link toSQLValue}.
+   * Transforms arrays of values using [toSQLValue()]{@link toSQLValue}.
    */
-  public whereIn(field: string, values: Array<Value> | RawValue): this {
+  public whereIn(field: string, values: Array<Value> | RawValue | Query): this {
     if (!isString(field)) throw new Error('field must be a string');
     validateSQL(field);
-    this._wheres.push(`${field} IN ${toSQLValue(values)}`);
+    if (values instanceof Query) {
+      this._wheres.push(`${field} IN ${Query._formatSubQuery(values)}`);
+    } else {
+      this._wheres.push(`${field} IN ${toSQLValue(values)}`);
+    }
     return this;
   }
 
   /**
    * Adds a 'where not in' condition.
    *
-   * Transforms the array of values using [toSQLValue()]{@link toSQLValue}.
+   * Transforms arrays of values using [toSQLValue()]{@link toSQLValue}.
    */
-  public whereNotIn(field: string, values: Array<Value> | RawValue): this {
+  public whereNotIn(field: string, values: Array<Value> | RawValue | Query): this {
     if (!isString(field)) throw new Error('field must be a string');
     validateSQL(field);
-    this._wheres.push(`${field} NOT IN ${toSQLValue(values)}`);
+    if (values instanceof Query) {
+      this._wheres.push(`${field} NOT IN ${Query._formatSubQuery(values)}`);
+    } else {
+      this._wheres.push(`${field} NOT IN ${toSQLValue(values)}`);
+    }
     return this;
   }
 

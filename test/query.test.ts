@@ -399,6 +399,23 @@ FROM users
 WHERE id IN (1, 2)`,
       );
     });
+    test('works with field and subquery', () => {
+      const subquery = new Query()
+        .from('posts')
+        .select('user_id')
+        .where('downvotes', '>', 10);
+      const queryString = new Query().from('users').whereIn('id', subquery).build();
+      expect('\n' + queryString).toBe(
+        `
+SELECT *
+FROM users
+WHERE id IN (
+SELECT user_id
+FROM posts
+WHERE downvotes > 10
+)`,
+      );
+    });
   });
 
   describe('query.whereNotIn()', () => {
@@ -409,6 +426,23 @@ WHERE id IN (1, 2)`,
 SELECT *
 FROM users
 WHERE id NOT IN (1, 2)`,
+      );
+    });
+    test('works with field and subquery', () => {
+      const subquery = new Query()
+        .from('posts')
+        .select('user_id')
+        .where('downvotes', '>', 10);
+      const queryString = new Query().from('users').whereNotIn('id', subquery).build();
+      expect('\n' + queryString).toBe(
+        `
+SELECT *
+FROM users
+WHERE id NOT IN (
+SELECT user_id
+FROM posts
+WHERE downvotes > 10
+)`,
       );
     });
   });

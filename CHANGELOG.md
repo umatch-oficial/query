@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [5.0.0](https://github.com/umatch-oficial/query/compare/v4.2.0...v5.0.0) (2024-07-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* removed dictionary support from query.whereIn() and query.whereNotIn().
+* changed the signature of Query.init() and removed Query.getTableAndAlias().
+
+### Features
+
+* add 'alias' argument to query.from() ([2efbc99](https://github.com/umatch-oficial/query/commit/2efbc994a0ffa1bb474dc2a0223f6812ceb62b0d))
+* add 'getAlias' parameter to Query.init() ([664a4f7](https://github.com/umatch-oficial/query/commit/664a4f7e658a44689c2d5284b78e72ad9a38938b))
+* add query.whereAfter() and query.whereBefore() ([595cae1](https://github.com/umatch-oficial/query/commit/595cae1b68332767e564122f54f330451d35a5c8))
+* add query.whereContains() and query.whereContainedIn() ([2b13e9d](https://github.com/umatch-oficial/query/commit/2b13e9db400a4f35d318e2cfb828f28442eece51))
+* allow subquery in query.whereIn() and query.whereNotIn() ([d100c13](https://github.com/umatch-oficial/query/commit/d100c13f3a83bbd9c4771e15415c7136defbeb5a))
+* remove dictionary support from query.whereIn() and query.whereNotIn() ([1988123](https://github.com/umatch-oficial/query/commit/1988123c1cd752b0c3550797df739d2cb4aa28a2))
+
+
+### Bug Fixes
+
+* fix default alias in query.with() when passed a string ([a2d5fd0](https://github.com/umatch-oficial/query/commit/a2d5fd0c29442ccc89c131ecbeea7969caf0c1be))
+
 ## [4.2.0](https://github.com/umatch-oficial/query/compare/v4.1.0...v4.2.0) (2024-05-24)
 
 

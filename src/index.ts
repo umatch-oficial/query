@@ -428,6 +428,44 @@ export class Query<Result = unknown> {
   }
 
   /**
+   * Adds a condition that ensures a date field is after a given date.
+   *
+   * This method switfly handles null values, coalescing them to a
+   * future or past date depending on the value of `nullMeansFuture`.
+   * That is, by default, null values fail the condition.
+   */
+  public whereAfter(
+    field: string,
+    date: Date | DateTime | RawValue,
+    nullMeansFuture = false,
+  ): this {
+    validateSQL(field);
+    this._wheres.push(
+      `${Query._coalesceTimestamp(field, nullMeansFuture)} > ${toSQLValue(date)}`,
+    );
+    return this;
+  }
+
+  /**
+   * Adds a condition that ensures a date field is before a given date.
+   *
+   * This method switfly handles null values, coalescing them to a
+   * future or past date depending on the value of `nullMeansPast`.
+   * That is, by default, null values fail the condition.
+   */
+  public whereBefore(
+    field: string,
+    date: Date | DateTime | RawValue,
+    nullMeansPast = false,
+  ): this {
+    validateSQL(field);
+    this._wheres.push(
+      `${Query._coalesceTimestamp(field, !nullMeansPast)} < ${toSQLValue(date)}`,
+    );
+    return this;
+  }
+
+  /**
    * Adds a 'where between' condition.
    *
    * Transforms min and max using [toSQLValue()]{@link toSQLValue}.
@@ -730,6 +768,14 @@ export class Query<Result = unknown> {
    */
   private static _formatSubQuery(query: Query | string): string {
     return `(\n${isString(query) ? query : query.build()}\n)`;
+  }
+
+  /**
+   * Coalesces a timestamp field to a future or past date.
+   */
+  private static _coalesceTimestamp(field: string, nullMeansFuture: boolean): string {
+    const inf = nullMeansFuture ? '+infinity' : '-infinity';
+    return `COALESCE(${field}, '${inf}'::TIMESTAMP)`;
   }
 
   /**

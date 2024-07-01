@@ -18,6 +18,9 @@ declare module '../src' {
   - name
   - deleted_at
   - tag_ids
+  - expiration
+  - migration
+  - verified_at
  2. posts
   - id
   - created_at
@@ -357,6 +360,60 @@ WHERE content = 'Hello'`,
 SELECT *
 FROM comments
 WHERE upvotes > 100`,
+      );
+    });
+  });
+
+  describe('query.whereAfter()', () => {
+    test('default false', () => {
+      const queryString = new Query()
+        .from('users')
+        .whereAfter('verified_at', Query.raw('NOW()'))
+        .build();
+      expect('\n' + queryString).toBe(
+        `
+SELECT *
+FROM users
+WHERE COALESCE(verified_at, '-infinity'::TIMESTAMP) > NOW()`,
+      );
+    });
+    test('default true', () => {
+      const queryString = new Query()
+        .from('users')
+        .whereAfter('expiration', Query.raw('NOW()'), true)
+        .build();
+      expect('\n' + queryString).toBe(
+        `
+SELECT *
+FROM users
+WHERE COALESCE(expiration, '+infinity'::TIMESTAMP) > NOW()`,
+      );
+    });
+  });
+
+  describe('query.whereBefore()', () => {
+    test('default false', () => {
+      const queryString = new Query()
+        .from('users')
+        .whereBefore('verified_at', Query.raw('NOW()'))
+        .build();
+      expect('\n' + queryString).toBe(
+        `
+SELECT *
+FROM users
+WHERE COALESCE(verified_at, '+infinity'::TIMESTAMP) < NOW()`,
+      );
+    });
+    test('default true', () => {
+      const queryString = new Query()
+        .from('users')
+        .whereBefore('migration', Query.raw('NOW()'), true)
+        .build();
+      expect('\n' + queryString).toBe(
+        `
+SELECT *
+FROM users
+WHERE COALESCE(migration, '-infinity'::TIMESTAMP) < NOW()`,
       );
     });
   });

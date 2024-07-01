@@ -126,7 +126,7 @@ export class Query<Result = unknown> {
   /**
    * A callback that is used to run queries.
    */
-  private static _run?: (query: string) => Promise<unknown>;
+  private static _run?: (query: Query) => Promise<unknown>;
 
   constructor() {
     this._withs = propertyNamesAndInitializers['with'][1]();
@@ -745,8 +745,7 @@ export class Query<Result = unknown> {
   public async run(): Promise<Result[]> {
     if (!Query._run) throw new Error('Cannot run without executing Query.init()');
 
-    const query = this.build();
-    return (await Query._run(query)) as Promise<Result[]>;
+    return (await Query._run(this)) as Promise<Result[]>;
   }
 
   /**
@@ -757,7 +756,7 @@ export class Query<Result = unknown> {
     run,
   }: {
     getAlias?: (table: string) => string;
-    run: (query: string) => Promise<unknown>;
+    run: (query: Query) => Promise<unknown>;
   }): void {
     if (getAlias) Query._getAlias = getAlias;
     Query._run = run;

@@ -59,7 +59,7 @@ describe('Query class', () => {
   });
   test('can be initialized', async () => {
     let queryString;
-    Query.init({ run: async (query: string) => (queryString = query) });
+    Query.init({ run: async (query: Query) => (queryString = query.build()) });
     await new Query().from('users').run();
     expect('\n' + queryString).toBe(
       `

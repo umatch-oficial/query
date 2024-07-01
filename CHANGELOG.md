@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [5.1.0](https://github.com/umatch-oficial/query/compare/v5.0.0...v5.1.0) (2024-07-01)
+
+
+### Features
+
+* rename and make Query.getAlias() public ([3c61660](https://github.com/umatch-oficial/query/commit/3c61660461bfb1d4f1bcd34f6d608a83876b02cd))
+
+
+### Bug Fixes
+
+* pass query instance to Query._run ([ab83d37](https://github.com/umatch-oficial/query/commit/ab83d3708df20d5114fdec0a138b644e9ae2ecc6))
+
 ## [5.0.0](https://github.com/umatch-oficial/query/compare/v4.2.0...v5.0.0) (2024-07-01)
 
 

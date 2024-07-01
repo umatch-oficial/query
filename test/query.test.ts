@@ -201,11 +201,9 @@ FROM users
     const queryString = new Query().from(subQuery).build();
     expect('\n' + queryString).toBe(expectedQueryString);
   });
-  test('Query._getAlias()', () => {
-    // @ts-expect-error
-    const getAlias = Query._getAlias;
-    // @ts-expect-error
-    expect(Query._getAlias('translations_tags')).toBe('tt');
+  test('Query.getAlias()', () => {
+    const getAlias = Query.getAlias;
+    expect(Query.getAlias('translations_tags')).toBe('tt');
     Query.init({
       getAlias: (table: string) =>
         table
@@ -215,8 +213,7 @@ FROM users
       run: async () => {},
     });
 
-    // @ts-expect-error
-    expect(Query._getAlias('translations_tags')).toBe('trta');
+    expect(Query.getAlias('translations_tags')).toBe('trta');
     Query.init({
       getAlias,
       run: async () => {},

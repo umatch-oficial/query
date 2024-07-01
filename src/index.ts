@@ -186,6 +186,19 @@ export class Query<Result = unknown> {
   }
 
   /**
+   * Returns the alias for a table.
+   *
+   * The default alias is the first letter of each word in the table
+   * name, assuming it is in snake_case.
+   */
+  public static getAlias = (table: string): string => {
+    return table
+      .split('_')
+      .map((word) => word[0])
+      .join('');
+  };
+
+  /**
    * Validates a string against SQL vulnerability exploits.
    *
    * @throws {Error} if the string contains any potential SQL vulnerability exploits.
@@ -758,7 +771,7 @@ export class Query<Result = unknown> {
     getAlias?: (table: string) => string;
     run: (query: Query) => Promise<unknown>;
   }): void {
-    if (getAlias) Query._getAlias = getAlias;
+    if (getAlias) Query.getAlias = getAlias;
     Query._run = run;
   }
 
@@ -776,19 +789,6 @@ export class Query<Result = unknown> {
     const inf = nullMeansFuture ? '+infinity' : '-infinity';
     return `COALESCE(${field}, '${inf}'::TIMESTAMP)`;
   }
-
-  /**
-   * Returns the alias for a table.
-   *
-   * The default alias is the first letter of each word in the table
-   * name, assuming it is in snake_case.
-   */
-  private static _getAlias = (table: string): string => {
-    return table
-      .split('_')
-      .map((word) => word[0])
-      .join('');
-  };
 
   /**
    * Adds a join clause.
@@ -812,7 +812,7 @@ export class Query<Result = unknown> {
       if (tableAlias) {
         joinTable = `${tableName} AS ${tableAlias}`;
       } else {
-        tableAlias = Query._getAlias(tableName);
+        tableAlias = Query.getAlias(tableName);
         if (tableAlias !== tableName) {
           joinTable = `${tableName} AS ${tableAlias}`;
         } else {

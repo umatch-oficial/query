@@ -658,24 +658,51 @@ HAVING count(*) >= 10,
   });
 });
 
-describe('query.orderBy()', () => {
-  test("works with 'asc'", () => {
-    const queryString = new Query().from('users').orderBy('created_at', 'asc').build();
-    expect('\n' + queryString).toBe(
-      `
+describe('order by methods', () => {
+  describe('query.orderBy()', () => {
+    test("works with 'asc'", () => {
+      const queryString = new Query().from('users').orderBy('created_at', 'asc').build();
+      expect('\n' + queryString).toBe(
+        `
 SELECT *
 FROM users
 ORDER BY created_at asc`,
-    );
-  });
-  test("works with 'desc'", () => {
-    const queryString = new Query().from('users').orderBy('created_at', 'desc').build();
-    expect('\n' + queryString).toBe(
-      `
+      );
+    });
+    test("works with 'desc'", () => {
+      const queryString = new Query().from('users').orderBy('created_at', 'desc').build();
+      expect('\n' + queryString).toBe(
+        `
 SELECT *
 FROM users
 ORDER BY created_at desc`,
-    );
+      );
+    });
+  });
+  test('query.orderByRaw()', () => {
+    const queryString = new Query().from('users').orderByRaw('RANDOM()').build();
+    expect('\n' + queryString).toBe(`
+SELECT *
+FROM users
+ORDER BY RANDOM()`);
+  });
+});
+
+describe('query.forPage()', () => {
+  test('works with single page', () => {
+    const queryString = new Query().from('users').forPage(1, 10).build();
+    expect('\n' + queryString).toBe(`
+SELECT *
+FROM users
+LIMIT 10`);
+  });
+  test('works with multiple pages', () => {
+    const queryString = new Query().from('users').forPage(2, 10).build();
+    expect('\n' + queryString).toBe(`
+SELECT *
+FROM users
+LIMIT 10
+OFFSET 10`);
   });
 });
 

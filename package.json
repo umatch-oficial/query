@@ -60,6 +60,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@umatch/utils": "^12.4.0"
+    "@umatch/utils": "^17.0.0"
   }
 }

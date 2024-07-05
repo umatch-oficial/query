@@ -301,8 +301,12 @@ export class Query<Result = unknown> {
    *
    * Parses arrays of conditions, but does not transform values.
    */
-  public innerJoin(table: string | Query, on: string[] | JoinPayload): this {
-    this._join('INNER', table, on);
+  public innerJoin(
+    table: string | Query,
+    on: string[] | JoinPayload,
+    lateral = false,
+  ): this {
+    this._join('INNER', table, on, lateral);
     return this;
   }
 
@@ -311,8 +315,12 @@ export class Query<Result = unknown> {
    *
    * Parses arrays of conditions, but does not transform values.
    */
-  public leftJoin(table: string | Query, on: string[] | JoinPayload): this {
-    this._join('LEFT', table, on);
+  public leftJoin(
+    table: string | Query,
+    on: string[] | JoinPayload,
+    lateral = false,
+  ): this {
+    this._join('LEFT', table, on, lateral);
     return this;
   }
 
@@ -321,8 +329,12 @@ export class Query<Result = unknown> {
    *
    * Parses arrays of conditions, but does not transform values.
    */
-  public outerJoin(table: string | Query, on: string[] | JoinPayload): this {
-    this._join('OUTER', table, on);
+  public outerJoin(
+    table: string | Query,
+    on: string[] | JoinPayload,
+    lateral = false,
+  ): this {
+    this._join('OUTER', table, on, lateral);
     return this;
   }
 
@@ -335,7 +347,7 @@ export class Query<Result = unknown> {
     const alias = `exclude_${table}`;
     // the column to exclude MUST be one of the joined columns, god knows why.
     const [excludeColumn] = Object.keys(conditions);
-    this._join('LEFT', `${table} AS ${alias}`, conditions);
+    this._join('LEFT', `${table} AS ${alias}`, conditions, false);
     this.whereRaw(`${alias}.${excludeColumn} IS NULL`);
     return this;
   }
@@ -799,6 +811,7 @@ export class Query<Result = unknown> {
     joinType: 'LEFT' | 'INNER' | 'OUTER',
     table: string | Query,
     on: readonly string[] | JoinPayload,
+    lateral: boolean,
   ): void {
     let tableAlias: string;
     let tableName: string;
@@ -831,7 +844,11 @@ export class Query<Result = unknown> {
       ons = toArray(on, entryToString(false, tableAlias));
     }
 
-    const clause = `${joinType} JOIN ${joinTable} ON ${ons.join(' AND ')}`;
+    const lateralKeyWord = lateral ? 'LATERAL ' : '';
+
+    const clause = `${joinType} JOIN ${lateralKeyWord}${joinTable} ON ${ons.join(
+      ' AND ',
+    )}`;
     this._joins.push(clause);
   }
 

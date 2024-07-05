@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [5.2.0](https://github.com/umatch-oficial/query/compare/v5.1.0...v5.2.0) (2024-07-05)
+
+
+### Features
+
+* add 'lateral' parameter to joins ([b44c632](https://github.com/umatch-oficial/query/commit/b44c63280e684c6ae21a96558e156c430c3d58ab))
+
 ## [5.1.0](https://github.com/umatch-oficial/query/compare/v5.0.0...v5.1.0) (2024-07-01)
 
 

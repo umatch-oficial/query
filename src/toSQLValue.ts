@@ -35,6 +35,7 @@ export function toSQLValue(x: unknown): Primitive {
     case 'Array':
       return `(${(x as unknown[]).map(toSQLValue).join(', ')})`;
     case 'Date':
+      return `'${(x as Date).toISOString()}'`;
     case 'DateTime':
       return `'${(x as DateTime).toISO()}'`;
     case 'RawValue':

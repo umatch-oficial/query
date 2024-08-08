@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.0.0](https://github.com/umatch-oficial/query/compare/v5.2.0...v6.0.0) (2024-08-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* removed moment support.
+
+### Features
+
+* add toSQLArray(), allow Raw in Query.from() and remove moment support ([eccf7dc](https://github.com/umatch-oficial/query/commit/eccf7dc749f1f67da5d01e55b33d4ec37fbd0b6f))
+
 ## [5.2.0](https://github.com/umatch-oficial/query/compare/v5.1.0...v5.2.0) (2024-07-05)
 
 

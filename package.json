@@ -1,6 +1,6 @@
 {
   "name": "@umatch/query",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "description": "Simple query builder for PostgreSQL. Inspired by knex.",
   "author": "Gabriel Okamoto <gabrielokamoto@hotmail.com>",
   "license": "MIT",

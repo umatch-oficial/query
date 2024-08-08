@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [6.0.1](https://github.com/umatch-oficial/query/compare/v6.0.0...v6.0.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **toSQLValue:** fix Date conversion ([f9b7d27](https://github.com/umatch-oficial/query/commit/f9b7d275ba3e30c3c21a760850c660175dd400dc))
+
 ## [6.0.0](https://github.com/umatch-oficial/query/compare/v5.2.0...v6.0.0) (2024-08-08)
 
 

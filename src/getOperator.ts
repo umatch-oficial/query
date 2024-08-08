@@ -1,6 +1,6 @@
 import { isString } from '@umatch/utils';
 
-import type { Value } from './index';
+import type { Value } from './Value';
 
 export type Operator = '>=' | '<=' | '!=' | '>' | '<' | '=' | 'IS NULL';
 

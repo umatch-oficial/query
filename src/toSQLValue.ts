@@ -10,9 +10,7 @@ import { RawValue } from './RawValue';
 import { validateSQL } from './validateSQL';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { Value } from './index';
 import type { DateTime } from 'luxon';
-import type { Moment } from 'moment';
 
 /**
  * Represents values as expected by Postgres.
@@ -37,8 +35,6 @@ export function toSQLValue(x: unknown): Primitive {
     case 'Array':
       return `(${(x as unknown[]).map(toSQLValue).join(', ')})`;
     case 'Date':
-    case 'Moment':
-      return `'${(x as Date | Moment).toISOString()}'`;
     case 'DateTime':
       return `'${(x as DateTime).toISO()}'`;
     case 'RawValue':

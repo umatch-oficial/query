@@ -1,6 +1,7 @@
 import { entryToString } from './entryToString';
 
-import type { JoinPayload, Payload, Value } from './index';
+import type { JoinPayload, Payload } from './index';
+import type { Value } from './Value';
 import type { Dictionary, OneOrArray } from '@umatch/utils';
 
 /**

@@ -6,7 +6,7 @@ import { getOperator } from './getOperator';
 import { Or as OrClass } from './Or';
 import { toSQLValue } from './toSQLValue';
 
-import type { Value } from './index';
+import type { Value } from './Value';
 
 /**
  * Returns a function, that converts entries from Object.entries()

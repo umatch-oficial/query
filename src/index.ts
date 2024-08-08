@@ -15,23 +15,23 @@ import { entryToString } from './entryToString';
 import { Or as OrClass, type OrCondition } from './Or';
 import { RawValue } from './RawValue';
 import { toArray } from './toArray';
+import { toSQLArray } from './toSQLArray';
 import { toSQLValue } from './toSQLValue';
 import { validateSQL } from './validateSQL';
 
 import type { Operator } from './getOperator';
+import type { Value } from './Value';
 import type { DateTime } from 'luxon';
-import type { Moment } from 'moment';
 
-export type Value = Primitive | Date | DateTime | Moment | RawValue;
 export type Payload = Dictionary<Value>;
 export type JoinPayload = Dictionary<Primitive | OrClass>;
-export { toSQLValue };
+export { toSQLArray, toSQLValue };
 
 export function isValue(obj: unknown): obj is Value {
   if (obj === null) return true;
   if (isPrimitive(obj)) return true;
 
-  return ['Date', 'DateTime', 'Moment', 'RawValue'].includes(obj?.constructor.name!);
+  return ['Date', 'DateTime', 'RawValue'].includes(obj?.constructor.name!);
 }
 
 /**
@@ -245,23 +245,29 @@ export class Query<Result = unknown> {
   }
 
   /**
-   * Sets the 'from' table.
+   * Sets the 'from' clause.
    *
-   * @throws {Error} if the table has already been set
+   * @throws {Error} if the clause has already been set
    */
   public from(table: string, alias?: string): this;
   /**
-   * Sets the 'from' table.
+   * Sets the 'from' clause.
    *
-   * @throws {Error} if the table has already been set
+   * @throws {Error} if the clause has already been set
+   */
+  public from(expression: RawValue): this;
+  /**
+   * Sets the 'from' clause.
+   *
+   * @throws {Error} if the clause has already been set
    */
   public from(query: Query, alias?: string): this;
   /**
-   * Sets the 'from' table.
+   * Sets the 'from' clause.
    *
-   * @throws {Error} if the table has already been set
+   * @throws {Error} if the clause has already been set
    */
-  public from(from: string | Query, alias?: string): this {
+  public from(from: string | Query | RawValue, alias?: string): this {
     if (this._from) throw new Error("Query already has 'from'");
 
     if (isString(from)) {
@@ -275,8 +281,11 @@ export class Query<Result = unknown> {
       } else {
         this._from = tableName;
       }
-    } else {
+    } else if (from instanceof Query) {
       this._from = `${Query._formatSubQuery(from)} AS ${alias ?? from._alias}`;
+    } else {
+      if (!isString(from.value)) throw new Error('Raw expression must be a string');
+      this._from = from.value;
     }
     return this;
   }
